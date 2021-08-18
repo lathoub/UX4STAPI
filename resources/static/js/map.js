@@ -53,3 +53,39 @@ axios.get('http://stapi.snuffeldb.synology.me/FROST-Server/v1.0/Locations').then
     // Zoom in the map so that it fits the Locations
     map.fitBounds(geoJsonLayerGroup.getBounds());
 });
+// Trying to add chart in panes
+
+var datastreamURI = "https://stapi.snuffeldb.synology.me/FROST-Server/v1.0/Datastreams(63)/";
+$.getJSON(datastreamURI, function(datastream) {
+    $.getJSON(datastream["Observations@iot.navigationLink"], function(observations) {
+        var data = $.map(observations.value, function(observation) {
+            var timestamp = moment(observation.phenomenonTime).valueOf();
+            return [[timestamp, parseFloat(observation.result)]];
+        });
+        data.sort(function(a, b) {
+            return a[0] - b[0];
+        });
+    });
+});
+
+var chart = new Highcharts.StockChart("chart", {
+    title: { text: "Loading Chart Data..." },
+    series: []
+});
+chart.showLoading();
+
+vchart.setTitle({ text: datastream.description });
+
+var series = chart.addSeries({
+    data: data,
+    tooltip: {
+        valueSuffix: " " + datastream.unitOfMeasurement.symbol
+    }
+});
+
+series.yAxis.update({
+    title: {
+        text: datastream.unitOfMeasurement.name + " (" + datastream.unitOfMeasurement.symbol + ")"
+    }
+});
+chart.hideLoading();
