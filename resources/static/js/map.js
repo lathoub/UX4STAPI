@@ -7,6 +7,11 @@ L.tileLayer('http://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png', {
     maxZoom: 20
 }).addTo(map);
 
+var searchLayer = L.layerGroup().addTo(map);
+//... adding data in searchLayer ...
+map.addControl( new L.Control.Search({layer: searchLayer}) );
+//searchLayer is a L.LayerGroup contains searched markers
+
 axios.get('http://stapi.snuffeldb.synology.me/FROST-Server/v1.0/Locations').then(function (success) {
 
     // Convert the Locations into GeoJSON Features
@@ -16,6 +21,8 @@ axios.get('http://stapi.snuffeldb.synology.me/FROST-Server/v1.0/Locations').then
             geometry: location.location,
         };
     });
+
+
 
     map.addControl(new L.Control.Fullscreen());
     // map.isFullscreen() // Is the map fullscreen?
@@ -28,6 +35,9 @@ axios.get('http://stapi.snuffeldb.synology.me/FROST-Server/v1.0/Locations').then
             console.log('exited fullscreen');
         }
     });
+
+
+
 
     //map stats with plotly
     L.stam({
@@ -55,6 +65,8 @@ axios.get('http://stapi.snuffeldb.synology.me/FROST-Server/v1.0/Locations').then
     // Zoom in the map so that it fits the Locations
     map.fitBounds(geoJsonLayerGroup.getBounds());
 });
+
+
 
 
 // Trying to add chart in panes
