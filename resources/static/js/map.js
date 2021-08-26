@@ -1,3 +1,5 @@
+
+
 //Leaflet map
 var map = L.map('map').setView([0, 0], 12);
 
@@ -7,6 +9,12 @@ L.tileLayer('http://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png', {
     maxZoom: 20
 }).addTo(map);
 
+Split(['#split-0', '#split-1'], {
+    direction: 'vertical',
+    gutterSize: 5,
+})
+
+//Search icon
 var searchLayer = L.layerGroup().addTo(map);
 //... adding data in searchLayer ...
 map.addControl( new L.Control.Search({layer: searchLayer}) );
@@ -90,7 +98,7 @@ $.getJSON(datastreamURI, function (datastream) {
         });
          console.log(obs);
 
-        var chart = new Highcharts.StockChart("chart", {
+        var chart = new Highcharts.StockChart("split-1", {
             title: {
                 text: dsName
             },
