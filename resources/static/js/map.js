@@ -1,3 +1,4 @@
+//Leaflet map
 var map = L.map('map').setView([0, 0], 12);
 
 L.tileLayer('http://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png', {
@@ -6,10 +7,10 @@ L.tileLayer('http://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png', {
     maxZoom: 20
 }).addTo(map);
 
-axios.get('http://stapi.snuffeldb.synology.me/FROST-Server/v1.0/Locations').then(function(success) {
+axios.get('http://stapi.snuffeldb.synology.me/FROST-Server/v1.0/Locations').then(function (success) {
 
     // Convert the Locations into GeoJSON Features
-    var geoJsonFeatures = success.data.value.map(function(location) {
+    var geoJsonFeatures = success.data.value.map(function (location) {
         return {
             type: 'Feature',
             geometry: location.location,
@@ -17,8 +18,8 @@ axios.get('http://stapi.snuffeldb.synology.me/FROST-Server/v1.0/Locations').then
     });
 
     map.addControl(new L.Control.Fullscreen());
-    map.isFullscreen() // Is the map fullscreen?
-    map.toggleFullscreen() // Either go fullscreen, or cancel the existing fullscreen.
+    // map.isFullscreen() // Is the map fullscreen?
+    //map.toggleFullscreen() // Either go fullscreen, or cancel the existing fullscreen.
 
     map.on('fullscreenchange', function () {
         if (map.isFullscreen()) {
@@ -27,8 +28,8 @@ axios.get('http://stapi.snuffeldb.synology.me/FROST-Server/v1.0/Locations').then
             console.log('exited fullscreen');
         }
     });
-    
 
+    //map stats with plotly
     L.stam({
         baseUrl: "https://stapi.snuffeldb.synology.me/FROST-Server/v1.0",
         MarkerStyle: "yellow",
@@ -40,11 +41,12 @@ axios.get('http://stapi.snuffeldb.synology.me/FROST-Server/v1.0/Locations').then
             top: 0
         },
         plot: {
-            startDate: new Date(Date.now() - 1000*60*60*24*30),
+            startDate: new Date(Date.now() - 1000 * 60 * 60 * 24 * 30),
             offset: 0,
             endDate: new Date()
         }
     }).addTo(map);
+
 
     // Create a GeoJSON layer, and add it to the map
     var geoJsonLayerGroup = L.geoJSON(geoJsonFeatures);
@@ -53,39 +55,40 @@ axios.get('http://stapi.snuffeldb.synology.me/FROST-Server/v1.0/Locations').then
     // Zoom in the map so that it fits the Locations
     map.fitBounds(geoJsonLayerGroup.getBounds());
 });
+
+
 // Trying to add chart in panes
 
-var datastreamURI = "https://stapi.snuffeldb.synology.me/FROST-Server/v1.0/Datastreams(63)/";
-$.getJSON(datastreamURI, function(datastream) {
-    $.getJSON(datastream["Observations@iot.navigationLink"], function(observations) {
-        var data = $.map(observations.value, function(observation) {
-            var timestamp = moment(observation.phenomenonTime).valueOf();
+
+
+var datastreamURI = "https://stapi.snuffeldb.synology.me/FROST-Server/v1.0/Things(15)/Datastreams(86)";
+$.getJSON(datastreamURI, function (datastream) {
+    console.log(datastream);
+    var dsName = datastream.name;
+    var dsUnitsOfMeasurement = datastream.unitOfMeasurement;
+    var observationsNavLink = datastream["Observations@iot.navigationLink"];
+    observationsNavLink += "?$orderby=resultTime asc"
+    console.log(observationsNavLink)
+    $.getJSON(observationsNavLink, function (observations) {
+        console.log(observations);
+
+         var obs = $.map(observations.value, function (observation) {
+          var timestamp = moment(observation.phenomenonTime).valueOf();
             return [[timestamp, parseFloat(observation.result)]];
         });
-        data.sort(function(a, b) {
-            return a[0] - b[0];
+         console.log(obs);
+
+        var chart = new Highcharts.StockChart("chart", {
+            title: {
+                text: dsName
+            },
+            series: [{
+                name: dsUnitsOfMeasurement.name,
+                data: obs
+            }]
         });
     });
+
+   // chart.hideLoading();
 });
 
-var chart = new Highcharts.StockChart("chart", {
-    title: { text: "Loading Chart Data..." },
-    series: []
-});
-chart.showLoading();
-
-vchart.setTitle({ text: datastream.description });
-
-var series = chart.addSeries({
-    data: data,
-    tooltip: {
-        valueSuffix: " " + datastream.unitOfMeasurement.symbol
-    }
-});
-
-series.yAxis.update({
-    title: {
-        text: datastream.unitOfMeasurement.name + " (" + datastream.unitOfMeasurement.symbol + ")"
-    }
-});
-chart.hideLoading();
