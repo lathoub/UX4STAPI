@@ -3,6 +3,11 @@ body{
     overflow: hidden;
 }
 
+#thingy{
+    height: 50vh;
+    width: 25%;
+    float: left;
+}
 
 #map{
     height: 50vh;

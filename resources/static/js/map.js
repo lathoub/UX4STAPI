@@ -22,6 +22,8 @@ $.getJSON(stapiBaseUrl + "/Things?$expand=Locations,Datastreams", function (thin
         return {
             type: 'Feature',
             id: thing['@iot.id'],
+            name: thing.name,
+            description: thing.description,
             location: thing.Locations[0],   // cache location info
             datastreams: thing.Datastreams, // cache Datastreams
             geometry: thing.Locations[0].location,
@@ -48,18 +50,16 @@ function markerOnClick(event) {
 
     var thingId = event.layer.feature.id;
 
-// TODO: iets met Bootstrap cards?
+    // TODO: iets met Bootstrap cards?
+    // https://getbootstrap.com/docs/4.0/components/card/
+    thingy.innerHTML += event.layer.feature.name;
+    //    thingy.innerHTML += success.description;
 
-    /*    $.getJSON(stapiUrl + 'Things(' + thingId + ')?$expand=Datastreams', function (thing) {
-            thingy.innerHTML += thing.name;
-            //    thingy.innerHTML += success.description;
-    
-            //    success.Datastreams.forEach(val => {
-            //        thingy.innerHTML += val.name;
-            //        thingy.innerHTML += val.description; // when clicked, the observations are added to the graph
-            //    });
-        });
-    */
+    //    success.Datastreams.forEach(val => {
+    //        thingy.innerHTML += val.name;
+    //        thingy.innerHTML += val.description; // when clicked, the observations are added to the graph
+    //    });
+    // });
 
     var datastreamId = event.layer.feature.datastreams[0]['@iot.id'];
     // TODO: if datastreamId already on the chart? If so, return
