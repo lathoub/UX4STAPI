@@ -13,6 +13,7 @@ L.tileLayer('http://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png', {
 $.getJSON(stapiBaseUrl + "/Things?$expand=Locations,Datastreams", function (things) {
 
     var markersClusterGroup = L.markerClusterGroup().addTo(map);
+    markersClusterGroup.on("click", markerOnClick);
 
     // Convert the Locations into GeoJSON Features
     var geoJsonFeatures = things.value.map(function (thing) {
@@ -56,3 +57,13 @@ $.getJSON(datastreamURI, function (datastream) {
     });
 
 });
+
+// event handler that picks up on Marker clicks
+function markerOnClick(event) {
+
+    if (event.originalEvent.shiftKey) {
+        // add to
+    } else {
+        // Single replaces
+    }
+}
