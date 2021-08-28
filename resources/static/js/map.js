@@ -1,7 +1,7 @@
-
-
-//Leaflet map
+// Leaflet map
 var map = L.map('map').setView([0, 0], 12);
+
+var stapiBaseUrl = 'http://stapi.snuffeldb.synology.me/FROST-Server/v1.0'
 
 L.tileLayer('http://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png', {
     attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="http://cartodb.com/attributions">CartoDB</a>',
@@ -9,7 +9,7 @@ L.tileLayer('http://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png', {
     maxZoom: 20
 }).addTo(map);
 
-$.getJSON('http://stapi.snuffeldb.synology.me/FROST-Server/v1.0/Locations', function (success) {
+$.getJSON(stapiBaseUrl + '/Locations', function (success) {
 
     // Convert the Locations into GeoJSON Features
     var geoJsonFeatures = success.value.map(function (location) {
@@ -21,7 +21,7 @@ $.getJSON('http://stapi.snuffeldb.synology.me/FROST-Server/v1.0/Locations', func
 
     //map stats with plotly
     L.stam({
-        baseUrl: "https://stapi.snuffeldb.synology.me/FROST-Server/v1.0",
+        baseUrl: stapiBaseUrl,
         MarkerStyle: "yellow",
         clusterMin: 20,
         queryObject: {
@@ -48,7 +48,7 @@ $.getJSON('http://stapi.snuffeldb.synology.me/FROST-Server/v1.0/Locations', func
 
 // Trying to add chart in panes
 
-var datastreamURI = "https://stapi.snuffeldb.synology.me/FROST-Server/v1.0/Things(15)/Datastreams(86)";
+var datastreamURI = stapiBaseUrl + "/Things(15)/Datastreams(86)";
 $.getJSON(datastreamURI, function (datastream) {
     console.log(datastream);
     var dsName = datastream.name;
