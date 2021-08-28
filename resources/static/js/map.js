@@ -48,34 +48,26 @@ $.getJSON(stapiBaseUrl + '/Locations', function (success) {
 
 // Trying to add chart in panes
 
-var datastreamURI = stapiBaseUrl + "/Things(15)/Datastreams(86)";
+var datastreamURI = stapiBaseUrl + "/Things(15)/Datastreams(86)?$expand=Observations($orderby=resultTime asc)";
 $.getJSON(datastreamURI, function (datastream) {
-    console.log(datastream);
+
     var dsName = datastream.name;
     var dsUnitsOfMeasurement = datastream.unitOfMeasurement;
-    var observationsNavLink = datastream["Observations@iot.navigationLink"];
-    observationsNavLink += "?$orderby=resultTime asc"
-    console.log(observationsNavLink)
-    $.getJSON(observationsNavLink, function (observations) {
-        console.log(observations);
 
-         var obs = $.map(observations.value, function (observation) {
-          var timestamp = moment(observation.phenomenonTime).valueOf();
-            return [[timestamp, parseFloat(observation.result)]];
-        });
-         console.log(obs);
-
-        var chart = new Highcharts.StockChart("chart", {
-            title: {
-                text: dsName
-            },
-            series: [{
-                name: dsUnitsOfMeasurement.name,
-                data: obs
-            }]
-        });
+    var obs = datastream.Observations.map(function (observation) {
+        var timestamp = moment(observation.phenomenonTime).valueOf();
+        return [timestamp, parseFloat(observation.result)];
     });
 
-   // chart.hideLoading();
+    var chart = new Highcharts.StockChart("chart", {
+        title: {
+            text: dsName
+        },
+        series: [{
+            name: dsUnitsOfMeasurement.name,
+            data: obs
+        }]
+    });
+
 });
 
