@@ -9,26 +9,34 @@ L.tileLayer('http://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png', {
     maxZoom: 20
 }).addTo(map);
 
-$.getJSON(stapiBaseUrl + '/Locations', function (success) {
+// Get Location and Datastreams of all Things
+$.getJSON(stapiBaseUrl + "/Things?$expand=Locations,Datastreams", function (things) {
+
+    var markersClusterGroup = L.markerClusterGroup().addTo(map);
 
     // Convert the Locations into GeoJSON Features
-    var geoJsonFeatures = success.value.map(function (location) {
+    var geoJsonFeatures = things.value.map(function (thing) {
         return {
             type: 'Feature',
-            geometry: location.location,
+            id: thing['@iot.id'],
+            location: thing.Locations[0],   // cache location info
+            datastreams: thing.Datastreams, // cache Datastreams
+            geometry: thing.Locations[0].location,
         };
     });
 
-    // Create a GeoJSON layer, and add it to the map
+    // Add geojson to LayerGroup
+    //
+    // Layergroups allows for multiple Things to be at the same location
+    // and still be able to select them indivisually
     var geoJsonLayerGroup = L.geoJSON(geoJsonFeatures);
-    geoJsonLayerGroup.addTo(map);
+    geoJsonLayerGroup.addTo(markersClusterGroup);
 
-    // Zoom in the map so that it fits the Locations
+    // Zoom in the map so that it fits the Things
     map.fitBounds(geoJsonLayerGroup.getBounds());
 });
 
-// Trying to add chart in panes
-
+// Create chart
 var datastreamURI = stapiBaseUrl + "/Things(15)/Datastreams(86)?$expand=Observations($orderby=resultTime asc)";
 $.getJSON(datastreamURI, function (datastream) {
 
@@ -48,4 +56,3 @@ $.getJSON(datastreamURI, function (datastream) {
     });
 
 });
-
