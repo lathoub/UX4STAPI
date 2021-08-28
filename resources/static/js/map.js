@@ -36,11 +36,10 @@ $.getJSON(stapiBaseUrl + "/Things?$expand=Locations,Datastreams", function (thin
     map.fitBounds(geoJsonLayerGroup.getBounds());
 });
 
-// Create empty chart
+// Create empty chart. Observation will be added
+// to the chart when the user click on the Market and Datastream
 var chart = new Highcharts.StockChart("chart", {
-    title: {
-        text: ""
-    },
+    title: { text: "" },
     series: []
 });
 
@@ -48,6 +47,9 @@ var chart = new Highcharts.StockChart("chart", {
 function markerOnClick(event) {
 
     var thingId = event.layer.feature.id;
+
+// TODO: iets met Bootstrap cards?
+
     /*    $.getJSON(stapiUrl + 'Things(' + thingId + ')?$expand=Datastreams', function (thing) {
             thingy.innerHTML += thing.name;
             //    thingy.innerHTML += success.description;
@@ -75,7 +77,7 @@ function markerOnClick(event) {
         } else {
             // Single replaces
         }
-    
+
         // Add observations to the chart
         chart.addSeries({
             name: datastream.unitOfMeasurement.name,
