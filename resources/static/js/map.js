@@ -19,25 +19,6 @@ $.getJSON(stapiBaseUrl + '/Locations', function (success) {
         };
     });
 
-    //map stats with plotly
-    L.stam({
-        baseUrl: stapiBaseUrl,
-        MarkerStyle: "yellow",
-        clusterMin: 20,
-        queryObject: {
-            count: true,
-            skip: 0,
-            entityType: 'Things',
-            top: 0
-        },
-        plot: {
-            startDate: new Date(Date.now() - 1000 * 60 * 60 * 24 * 30),
-            offset: 0,
-            endDate: new Date()
-        }
-    }).addTo(map);
-
-
     // Create a GeoJSON layer, and add it to the map
     var geoJsonLayerGroup = L.geoJSON(geoJsonFeatures);
     geoJsonLayerGroup.addTo(map);
