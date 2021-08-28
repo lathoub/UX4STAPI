@@ -12,6 +12,8 @@ L.tileLayer('http://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png', {
 // Get Location and Datastreams of all Things
 $.getJSON(stapiBaseUrl + "/Things?$expand=Locations,Datastreams", function (things) {
 
+    // Layergroups allows for multiple Things to be at the same location
+    // and still be able to select them indivisually
     var markersClusterGroup = L.markerClusterGroup().addTo(map);
     markersClusterGroup.on("click", markerOnClick);
 
@@ -27,9 +29,6 @@ $.getJSON(stapiBaseUrl + "/Things?$expand=Locations,Datastreams", function (thin
     });
 
     // Add geojson to LayerGroup
-    //
-    // Layergroups allows for multiple Things to be at the same location
-    // and still be able to select them indivisually
     var geoJsonLayerGroup = L.geoJSON(geoJsonFeatures);
     geoJsonLayerGroup.addTo(markersClusterGroup);
 
@@ -37,33 +36,52 @@ $.getJSON(stapiBaseUrl + "/Things?$expand=Locations,Datastreams", function (thin
     map.fitBounds(geoJsonLayerGroup.getBounds());
 });
 
-// Create chart
-var datastreamURI = stapiBaseUrl + "/Things(15)/Datastreams(86)?$expand=Observations($orderby=resultTime asc)";
-$.getJSON(datastreamURI, function (datastream) {
-
-    var obs = datastream.Observations.map(function (observation) {
-        var timestamp = moment(observation.phenomenonTime).valueOf();
-        return [timestamp, parseFloat(observation.result)];
-    });
-
-    var chart = new Highcharts.StockChart("chart", {
-        title: {
-            text: datastream.name
-        },
-        series: [{
-            name: datastream.unitOfMeasurement.name,
-            data: obs
-        }]
-    });
-
+// Create empty chart
+var chart = new Highcharts.StockChart("chart", {
+    title: {
+        text: ""
+    },
+    series: []
 });
 
 // event handler that picks up on Marker clicks
 function markerOnClick(event) {
 
-    if (event.originalEvent.shiftKey) {
-        // add to
-    } else {
-        // Single replaces
-    }
+    var thingId = event.layer.feature.id;
+    /*    $.getJSON(stapiUrl + 'Things(' + thingId + ')?$expand=Datastreams', function (thing) {
+            thingy.innerHTML += thing.name;
+            //    thingy.innerHTML += success.description;
+    
+            //    success.Datastreams.forEach(val => {
+            //        thingy.innerHTML += val.name;
+            //        thingy.innerHTML += val.description; // when clicked, the observations are added to the graph
+            //    });
+        });
+    */
+
+    var datastreamId = event.layer.feature.datastreams[0]['@iot.id'];
+    // TODO: if datastreamId already on the chart? If so, return
+
+    var observationsUrl = stapiBaseUrl + '/Things(' + thingId + ')/Datastreams(' + datastreamId + ')?$expand=Observations($orderby=resultTime asc)';
+    $.getJSON(observationsUrl, function (datastream) {
+
+        var obs = datastream.Observations.map(function (observation) {
+            var timestamp = moment(observation.phenomenonTime).valueOf();
+            return [timestamp, parseFloat(observation.result)];
+        });
+
+        if (event.originalEvent.shiftKey) {
+            // add to
+        } else {
+            // Single replaces
+        }
+    
+        // Add observations to the chart
+        chart.addSeries({
+            name: datastream.unitOfMeasurement.name,
+            data: obs
+        });
+
+    });
+
 }
