@@ -9,12 +9,6 @@ L.tileLayer('http://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png', {
     maxZoom: 20
 }).addTo(map);
 
-//Search icon
-var searchLayer = L.layerGroup().addTo(map);
-//... adding data in searchLayer ...
-map.addControl( new L.Control.Search({layer: searchLayer}) );
-//searchLayer is a L.LayerGroup contains searched markers
-
 axios.get('http://stapi.snuffeldb.synology.me/FROST-Server/v1.0/Locations').then(function (success) {
 
     // Convert the Locations into GeoJSON Features
@@ -24,23 +18,6 @@ axios.get('http://stapi.snuffeldb.synology.me/FROST-Server/v1.0/Locations').then
             geometry: location.location,
         };
     });
-
-
-
-    map.addControl(new L.Control.Fullscreen());
-    // map.isFullscreen() // Is the map fullscreen?
-    //map.toggleFullscreen() // Either go fullscreen, or cancel the existing fullscreen.
-
-    map.on('fullscreenchange', function () {
-        if (map.isFullscreen()) {
-            console.log('entered fullscreen');
-        } else {
-            console.log('exited fullscreen');
-        }
-    });
-
-
-
 
     //map stats with plotly
     L.stam({
