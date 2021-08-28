@@ -51,9 +51,6 @@ $.getJSON(stapiBaseUrl + '/Locations', function (success) {
 var datastreamURI = stapiBaseUrl + "/Things(15)/Datastreams(86)?$expand=Observations($orderby=resultTime asc)";
 $.getJSON(datastreamURI, function (datastream) {
 
-    var dsName = datastream.name;
-    var dsUnitsOfMeasurement = datastream.unitOfMeasurement;
-
     var obs = datastream.Observations.map(function (observation) {
         var timestamp = moment(observation.phenomenonTime).valueOf();
         return [timestamp, parseFloat(observation.result)];
@@ -61,10 +58,10 @@ $.getJSON(datastreamURI, function (datastream) {
 
     var chart = new Highcharts.StockChart("chart", {
         title: {
-            text: dsName
+            text: datastream.name
         },
         series: [{
-            name: dsUnitsOfMeasurement.name,
+            name: datastream.unitOfMeasurement.name,
             data: obs
         }]
     });
