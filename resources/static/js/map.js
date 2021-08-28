@@ -1,7 +1,7 @@
-
-
-//Leaflet map
+// Leaflet map
 var map = L.map('map').setView([0, 0], 12);
+
+var stapiBaseUrl = 'http://stapi.snuffeldb.synology.me/FROST-Server/v1.0'
 
 L.tileLayer('http://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png', {
     attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="http://cartodb.com/attributions">CartoDB</a>',
@@ -9,101 +9,81 @@ L.tileLayer('http://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png', {
     maxZoom: 20
 }).addTo(map);
 
-//Search icon
-var searchLayer = L.layerGroup().addTo(map);
-//... adding data in searchLayer ...
-map.addControl( new L.Control.Search({layer: searchLayer}) );
-//searchLayer is a L.LayerGroup contains searched markers
+// Get Location and Datastreams of all Things
+$.getJSON(stapiBaseUrl + "/Things?$expand=Locations,Datastreams", function (things) {
 
-axios.get('http://stapi.snuffeldb.synology.me/FROST-Server/v1.0/Locations').then(function (success) {
+    // Layergroups allows for multiple Things to be at the same location
+    // and still be able to select them indivisually
+    var markersClusterGroup = L.markerClusterGroup().addTo(map);
+    markersClusterGroup.on("click", markerOnClick);
 
     // Convert the Locations into GeoJSON Features
-    var geoJsonFeatures = success.data.value.map(function (location) {
+    var geoJsonFeatures = things.value.map(function (thing) {
         return {
             type: 'Feature',
-            geometry: location.location,
+            id: thing['@iot.id'],
+            name: thing.name,
+            description: thing.description,
+            location: thing.Locations[0],   // cache location info
+            datastreams: thing.Datastreams, // cache Datastreams
+            geometry: thing.Locations[0].location,
         };
     });
 
-
-
-    map.addControl(new L.Control.Fullscreen());
-    // map.isFullscreen() // Is the map fullscreen?
-    //map.toggleFullscreen() // Either go fullscreen, or cancel the existing fullscreen.
-
-    map.on('fullscreenchange', function () {
-        if (map.isFullscreen()) {
-            console.log('entered fullscreen');
-        } else {
-            console.log('exited fullscreen');
-        }
-    });
-
-
-
-
-    //map stats with plotly
-    L.stam({
-        baseUrl: "https://stapi.snuffeldb.synology.me/FROST-Server/v1.0",
-        MarkerStyle: "yellow",
-        clusterMin: 20,
-        queryObject: {
-            count: true,
-            skip: 0,
-            entityType: 'Things',
-            top: 0
-        },
-        plot: {
-            startDate: new Date(Date.now() - 1000 * 60 * 60 * 24 * 30),
-            offset: 0,
-            endDate: new Date()
-        }
-    }).addTo(map);
-
-
-    // Create a GeoJSON layer, and add it to the map
+    // Add geojson to LayerGroup
     var geoJsonLayerGroup = L.geoJSON(geoJsonFeatures);
-    geoJsonLayerGroup.addTo(map);
+    geoJsonLayerGroup.addTo(markersClusterGroup);
 
-    // Zoom in the map so that it fits the Locations
+    // Zoom in the map so that it fits the Things
     map.fitBounds(geoJsonLayerGroup.getBounds());
 });
 
-
-
-
-// Trying to add chart in panes
-
-
-
-var datastreamURI = "https://stapi.snuffeldb.synology.me/FROST-Server/v1.0/Things(15)/Datastreams(86)";
-$.getJSON(datastreamURI, function (datastream) {
-    console.log(datastream);
-    var dsName = datastream.name;
-    var dsUnitsOfMeasurement = datastream.unitOfMeasurement;
-    var observationsNavLink = datastream["Observations@iot.navigationLink"];
-    observationsNavLink += "?$orderby=resultTime asc"
-    console.log(observationsNavLink)
-    $.getJSON(observationsNavLink, function (observations) {
-        console.log(observations);
-
-         var obs = $.map(observations.value, function (observation) {
-          var timestamp = moment(observation.phenomenonTime).valueOf();
-            return [[timestamp, parseFloat(observation.result)]];
-        });
-         console.log(obs);
-
-        var chart = new Highcharts.StockChart("chart", {
-            title: {
-                text: dsName
-            },
-            series: [{
-                name: dsUnitsOfMeasurement.name,
-                data: obs
-            }]
-        });
-    });
-
-   // chart.hideLoading();
+// Create empty chart. Observation will be added
+// to the chart when the user click on the Market and Datastream
+var chart = new Highcharts.StockChart("chart", {
+    title: { text: "" },
+    series: []
 });
 
+// event handler that picks up on Marker clicks
+function markerOnClick(event) {
+
+    var thingId = event.layer.feature.id;
+
+    // TODO: iets met Bootstrap cards?
+    // https://getbootstrap.com/docs/4.0/components/card/
+    thingy.innerHTML += event.layer.feature.name;
+    //    thingy.innerHTML += success.description;
+
+    //    success.Datastreams.forEach(val => {
+    //        thingy.innerHTML += val.name;
+    //        thingy.innerHTML += val.description; // when clicked, the observations are added to the graph
+    //    });
+    // });
+
+    var datastreamId = event.layer.feature.datastreams[0]['@iot.id'];
+    // TODO: if datastreamId already on the chart? If so, return
+
+    var observationsUrl = stapiBaseUrl + '/Things(' + thingId + ')/Datastreams(' + datastreamId + ')?$expand=Observations($orderby=resultTime asc)';
+    $.getJSON(observationsUrl, function (datastream) {
+
+        var obs = datastream.Observations.map(function (observation) {
+            var timestamp = moment(observation.phenomenonTime).valueOf();
+            return [timestamp, parseFloat(observation.result)];
+        });
+
+        if (event.originalEvent.shiftKey) {
+            // add to
+        } else {
+            // Single replaces
+        }
+
+        // Add observations to the chart
+        chart.addSeries({
+            name: datastream.unitOfMeasurement.name,
+            data: obs
+        });
+
+    });
+
+}
