@@ -9,10 +9,10 @@ L.tileLayer('http://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png', {
     maxZoom: 20
 }).addTo(map);
 
-axios.get('http://stapi.snuffeldb.synology.me/FROST-Server/v1.0/Locations').then(function (success) {
+$.getJSON('http://stapi.snuffeldb.synology.me/FROST-Server/v1.0/Locations', function (success) {
 
     // Convert the Locations into GeoJSON Features
-    var geoJsonFeatures = success.data.value.map(function (location) {
+    var geoJsonFeatures = success.value.map(function (location) {
         return {
             type: 'Feature',
             geometry: location.location,
@@ -46,12 +46,7 @@ axios.get('http://stapi.snuffeldb.synology.me/FROST-Server/v1.0/Locations').then
     map.fitBounds(geoJsonLayerGroup.getBounds());
 });
 
-
-
-
 // Trying to add chart in panes
-
-
 
 var datastreamURI = "https://stapi.snuffeldb.synology.me/FROST-Server/v1.0/Things(15)/Datastreams(86)";
 $.getJSON(datastreamURI, function (datastream) {
