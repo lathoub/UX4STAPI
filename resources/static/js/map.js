@@ -52,14 +52,25 @@ function markerOnClick(event) {
 
     // TODO: iets met Bootstrap cards?
     // https://getbootstrap.com/docs/4.0/components/card/
-    thingy.innerHTML += event.layer.feature.name;
-    //    thingy.innerHTML += success.description;
 
-    //    success.Datastreams.forEach(val => {
-    //        thingy.innerHTML += val.name;
-    //        thingy.innerHTML += val.description; // when clicked, the observations are added to the graph
-    //    });
-    // });
+    var html = '<h1>' + event.layer.feature.name + '</h1>';
+
+    event.layer.feature.datastreams.forEach(function (datastream){
+       html +=  '<li>' + datastream.name + '</li>'
+    });
+
+    html = '<ul>' + html + '</ul>'
+
+    document.querySelector('#thingy').innerHTML=  html;
+
+
+    // thingy.innerHTML += success.description;
+
+       // success.Datastreams.forEach(val => {
+       //     thingy.innerHTML += val.name;
+       //     thingy.innerHTML += val.description; // when clicked, the observations are added to the graph
+       // });
+    //
 
     var datastreamId = event.layer.feature.datastreams[0]['@iot.id'];
     // TODO: if datastreamId already on the chart? If so, return
