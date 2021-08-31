@@ -3,6 +3,11 @@ body{
     overflow: hidden;
 }
 
+li:hover{
+    color: blue;
+    cursor: pointer;
+}
+
 #thingy{
     height: 50vh;
     width: 25%;

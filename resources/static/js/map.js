@@ -45,6 +45,7 @@ var chart = new Highcharts.StockChart("chart", {
     series: []
 });
 
+
 // event handler that picks up on Marker clicks
 function markerOnClick(event) {
 
@@ -59,9 +60,40 @@ function markerOnClick(event) {
        html +=  '<li>' + datastream.name + '</li>'
     });
 
-    html = '<ul>' + html + '</ul>'
+    html = '<ul id="datastreamlist">' + html + '</ul>'
+
 
     document.querySelector('#thingy').innerHTML=  html;
+
+    document.getElementById("datastreamlist").addEventListener("click",function (e){
+        if (e.target && e.target.nodeName === "LI") {
+
+            var datastreamId = event.layer.feature.datastreams[0]['@iot.id'];
+            // TODO: if datastreamId already on the chart? If so, return
+
+            var observationsUrl = stapiBaseUrl + '/Things(' + thingId + ')/Datastreams(' + datastreamId + ')?$expand=Observations($orderby=resultTime asc)';
+            $.getJSON(observationsUrl, function (datastream) {
+
+                var obs = datastream.Observations.map(function (observation) {
+                    var timestamp = moment(observation.phenomenonTime).valueOf();
+                    return [timestamp, parseFloat(observation.result)];
+                });
+
+                if (event.originalEvent.shiftKey) {
+                    // add to
+                } else {
+                    // Single replaces
+                }
+
+                // Add observations to the chart
+                chart.addSeries({
+                    name: datastream.unitOfMeasurement.name,
+                    data: obs
+                });
+
+            });
+        }
+    });
 
 
     // thingy.innerHTML += success.description;
@@ -72,29 +104,6 @@ function markerOnClick(event) {
        // });
     //
 
-    var datastreamId = event.layer.feature.datastreams[0]['@iot.id'];
-    // TODO: if datastreamId already on the chart? If so, return
 
-    var observationsUrl = stapiBaseUrl + '/Things(' + thingId + ')/Datastreams(' + datastreamId + ')?$expand=Observations($orderby=resultTime asc)';
-    $.getJSON(observationsUrl, function (datastream) {
-
-        var obs = datastream.Observations.map(function (observation) {
-            var timestamp = moment(observation.phenomenonTime).valueOf();
-            return [timestamp, parseFloat(observation.result)];
-        });
-
-        if (event.originalEvent.shiftKey) {
-            // add to
-        } else {
-            // Single replaces
-        }
-
-        // Add observations to the chart
-        chart.addSeries({
-            name: datastream.unitOfMeasurement.name,
-            data: obs
-        });
-
-    });
 
 }
