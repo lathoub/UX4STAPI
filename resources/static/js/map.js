@@ -60,7 +60,7 @@ function markerOnClick(event) {
        html +=  '<li>' + datastream.name + '</li>'
     });
 
-    html = '<ul id="datastreamlist">' + html + '</ul>'
+    html = '<ul id="datastreamlist">' + html + '</ul>' + '<button id="config">Configure</button>'
 
 
     document.querySelector('#thingy').innerHTML=  html;

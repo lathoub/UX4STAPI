@@ -1,3 +1,7 @@
+html{
+    font-family: sans-serif;
+}
+
 body{
     height: 100%;
     overflow: hidden;
@@ -8,19 +12,28 @@ li:hover{
     cursor: pointer;
 }
 
+#config{
+    position: absolute;
+    margin: 20px;
+    bottom: 0;
+}
+
 #thingy{
+    position: relative;
     height: 50vh;
-    width: 25%;
+    width: 24%;
     float: left;
+    outline: thin solid black;
 }
 
 #map{
+    margin-bottom: 5px;
     height: 50vh;
     width: 75%;
     float: right;
 }
 
 #chart{
-    height: 49vh;
+    height: 48vh;
 }
 
