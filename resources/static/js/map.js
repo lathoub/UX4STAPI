@@ -38,6 +38,10 @@ $.getJSON(stapiBaseUrl + "/Things?$expand=Locations,Datastreams($orderby=name as
     map.fitBounds(geoJsonLayerGroup.getBounds());
 });
 
+map.on('click', function (e) {
+    console.log(e);
+});
+
 // Create empty chart. Observation will be added
 // to the chart when the user click on the Market and Datastream
 var chart = new Highcharts.StockChart("chart", {
@@ -67,7 +71,6 @@ function markerOnClick(event) {
         + '<button id="config">Configure</button>'
         + '<button id="position">Position</button>'
         + '<button id="delete">Delete</button>'
-
 
     document.querySelector('#thingy').innerHTML = html;
 
@@ -108,18 +111,27 @@ function markerOnClick(event) {
     });
 
     var configtest = document.getElementById('config');
-    configtest.onclick = function() {
+    configtest.onclick = function () {
         console.log('Config button test');
     }
 
     var positiontest = document.getElementById('position');
-    positiontest.onclick = function() {
+    positiontest.onclick = function () {
         console.log('Position button test');
     }
 
     var deletetest = document.getElementById('delete');
-    deletetest.onclick = function() {
-        console.log('Delete button test');
+    deletetest.onclick = function () {
+        let thingId = prompt("To Delete the device, enter the name and press OK", "");
+        if (thingId && thingId == 42) { // TODO: compare with selected device
+            $.ajax({
+                url: stapiBaseUrl + '/Things(' + thingId +')',
+                type: 'DELETE',
+                success: function (result) {
+                    console.log(result)
+                }
+            });
+        }
     }
 
 }
