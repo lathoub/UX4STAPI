@@ -42,6 +42,7 @@ $.getJSON(stapiBaseUrl + "/Things?$expand=Locations,Datastreams($orderby=name as
 // to the chart when the user click on the Market and Datastream
 var chart = new Highcharts.StockChart("chart", {
     title: { text: "" },
+    legend: { enabled: true },
     series: []
 });
 
@@ -54,12 +55,15 @@ function markerOnClick(event) {
     // TODO: iets met Bootstrap cards?
     // https://getbootstrap.com/docs/4.0/components/card/
 
-    var html = '<h1>' + thing.name + '</h1>';
+    var html = '';
+    html += '<h1>' + thing.name + '</h1>';
+    html += '<h2>' + thing.location.name + '</h2>';
+    html += '<h3>' + 'Datastreams:' + '</h3>';
     thing.datastreams.forEach(function (datastream) {
         html += '<li>' + datastream.name + '</li>'
     });
 
-    html = '<ul id="datastreamlist">' + html + '</ul>' 
+    html = '<ul id="datastreamlist">' + html + '</ul>'
         + '<button id="config">Configure</button>'
         + '<button id="position">Position</button>'
         + '<button id="delete">Delete</button>'
@@ -71,7 +75,7 @@ function markerOnClick(event) {
         if (e.target && e.target.nodeName === "LI") {
 
             var datastream = thing.datastreams.find(ds => ds.name == e.target.innerText);
-            if (datastream == undefined) {} // TODO: error handling
+            if (datastream == undefined) { } // TODO: error handling
 
             var observationsUrl = stapiBaseUrl + '/Things(' + thing.id + ')/Datastreams(' + datastream['@iot.id'] + ')?$expand=Observations($orderby=resultTime asc)';
             $.getJSON(observationsUrl, function (datastream) {
@@ -89,7 +93,8 @@ function markerOnClick(event) {
 
                 // Add observations to the chart
                 chart.addSeries({
-                    name: datastream.unitOfMeasurement.name,
+                    id: 'dada',
+                    name: "Snuffel " + thing.name + '(' + thing.location.name + ')' + ", " + datastream.name,
                     data: obs
                 });
 
