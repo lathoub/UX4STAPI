@@ -91,6 +91,8 @@ function markerOnClick(event) {
                     // Single replaces
                 }
 
+
+
                 // Add observations to the chart
                 chart.addSeries({
                     id: 'dada',
@@ -99,7 +101,26 @@ function markerOnClick(event) {
                 });
 
             });
+
+
+
         }
     });
 
+    var configtest = document.getElementById('config');
+    configtest.onclick = function() {
+        console.log('Config button test');
+    }
+
+    var positiontest = document.getElementById('position');
+    positiontest.onclick = function() {
+        console.log('Position button test');
+    }
+
+    var deletetest = document.getElementById('delete');
+    deletetest.onclick = function() {
+        console.log('Delete button test');
+    }
+
 }
+
