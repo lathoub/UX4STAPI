@@ -10,7 +10,7 @@ L.tileLayer('http://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png', {
 }).addTo(map);
 
 // Get Location and Datastreams of all Things
-$.getJSON(stapiBaseUrl + "/Things?$expand=Locations,Datastreams", function (things) {
+$.getJSON(stapiBaseUrl + "/Things?$expand=Locations,Datastreams($orderby=name asc)", function (things) {
 
     // Layergroups allows for multiple Things to be at the same location
     // and still be able to select them indivisually
