@@ -13,21 +13,24 @@ li:hover{
 }
 
 #config{
-    position: absolute;
-    margin: 20px;
-    bottom: 0;
+    display: block;
+    margin: 5px 5px 5px 20px ;
+    float: left;
 }
 
 #delete{
-    position: absolute;
-    margin: 20px;
-    bottom: 0;
+    display: block;
+    margin: 5px ;
+    float: left;
+
 }
 
 #position{
-    position: absolute;
-    margin: 20px;
-    bottom: 0;
+    display: block;
+    margin: 5px ;
+    float: left;
+
+
 }
 
 #thingy{

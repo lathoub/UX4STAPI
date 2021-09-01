@@ -60,9 +60,10 @@ function markerOnClick(event) {
     });
 
     html = '<ul id="datastreamlist">' + html + '</ul>' 
-    + '<button id="delete">Delete</button>'
-    + '<button id="config">Configure</button>'
-    + '<button id="position">Position</button>'
+        + '<button id="config">Configure</button>'
+        + '<button id="position">Position</button>'
+        + '<button id="delete">Delete</button>'
+
 
     document.querySelector('#thingy').innerHTML = html;
 
