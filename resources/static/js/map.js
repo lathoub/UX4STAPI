@@ -117,7 +117,21 @@ function markerOnClick(event) {
 
     var positiontest = document.getElementById('position');
     positiontest.onclick = function () {
-        console.log('Position button test');
+
+        // TODO collapse group
+
+        let address = prompt("Type new address of device", "");
+/*
+        $.get(location.protocol + '//nominatim.openstreetmap.org/search?format=json&q=' + address, function (data) {
+            console.log(data);
+        });
+*/
+        var center = map.getCenter();
+        var marker = new L.marker([center.lat, center.lng], {
+            draggable: true,
+            autoPan: true
+        }).addTo(map);
+        // TODO: after dragging, fix the marker - sk for address
     }
 
     var deletetest = document.getElementById('delete');
@@ -125,10 +139,11 @@ function markerOnClick(event) {
         let thingId = prompt("To Delete the device, enter the name and press OK", "");
         if (thingId && thingId == 42) { // TODO: compare with selected device
             $.ajax({
-                url: stapiBaseUrl + '/Things(' + thingId +')',
+                url: stapiBaseUrl + '/Things(' + thingId + ')',
                 type: 'DELETE',
                 success: function (result) {
                     console.log(result)
+                    // TODO: reload something
                 }
             });
         }
