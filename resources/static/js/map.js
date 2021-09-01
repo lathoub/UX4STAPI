@@ -49,29 +49,27 @@ var chart = new Highcharts.StockChart("chart", {
 // event handler that picks up on Marker clicks
 function markerOnClick(event) {
 
-    var thingId = event.layer.feature.id;
+    var thing = event.layer.feature;
 
     // TODO: iets met Bootstrap cards?
     // https://getbootstrap.com/docs/4.0/components/card/
 
-    var html = '<h1>' + event.layer.feature.name + '</h1>';
-
-    event.layer.feature.datastreams.forEach(function (datastream){
-       html +=  '<li>' + datastream.name + '</li>'
+    var html = '<h1>' + thing.name + '</h1>';
+    thing.datastreams.forEach(function (datastream) {
+        html += '<li>' + datastream.name + '</li>'
     });
 
     html = '<ul id="datastreamlist">' + html + '</ul>' + '<button id="config">Configure</button>'
 
+    document.querySelector('#thingy').innerHTML = html;
 
-    document.querySelector('#thingy').innerHTML=  html;
-
-    document.getElementById("datastreamlist").addEventListener("click",function (e){
+    document.getElementById("datastreamlist").addEventListener("click", function (e) {
         if (e.target && e.target.nodeName === "LI") {
 
-            var datastreamId = event.layer.feature.datastreams[0]['@iot.id'];
-            // TODO: if datastreamId already on the chart? If so, return
+            var datastream = thing.datastreams.find(ds => ds.name == e.target.innerText);
+            if (datastream == undefined) {} // TODO: error handling
 
-            var observationsUrl = stapiBaseUrl + '/Things(' + thingId + ')/Datastreams(' + datastreamId + ')?$expand=Observations($orderby=resultTime asc)';
+            var observationsUrl = stapiBaseUrl + '/Things(' + thing.id + ')/Datastreams(' + datastream['@iot.id'] + ')?$expand=Observations($orderby=resultTime asc)';
             $.getJSON(observationsUrl, function (datastream) {
 
                 var obs = datastream.Observations.map(function (observation) {
@@ -98,10 +96,10 @@ function markerOnClick(event) {
 
     // thingy.innerHTML += success.description;
 
-       // success.Datastreams.forEach(val => {
-       //     thingy.innerHTML += val.name;
-       //     thingy.innerHTML += val.description; // when clicked, the observations are added to the graph
-       // });
+    // success.Datastreams.forEach(val => {
+    //     thingy.innerHTML += val.name;
+    //     thingy.innerHTML += val.description; // when clicked, the observations are added to the graph
+    // });
     //
 
 

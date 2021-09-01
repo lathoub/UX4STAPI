@@ -18,6 +18,18 @@ li:hover{
     bottom: 0;
 }
 
+#delete{
+    position: absolute;
+    margin: 20px;
+    bottom: 0;
+}
+
+#position{
+    position: absolute;
+    margin: 20px;
+    bottom: 0;
+}
+
 #thingy{
     position: relative;
     height: 50vh;
