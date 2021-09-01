@@ -59,7 +59,10 @@ function markerOnClick(event) {
         html += '<li>' + datastream.name + '</li>'
     });
 
-    html = '<ul id="datastreamlist">' + html + '</ul>' + '<button id="config">Configure</button>'
+    html = '<ul id="datastreamlist">' + html + '</ul>' 
+    + '<button id="delete">Delete</button>'
+    + '<button id="config">Configure</button>'
+    + '<button id="position">Position</button>'
 
     document.querySelector('#thingy').innerHTML = html;
 
@@ -92,16 +95,5 @@ function markerOnClick(event) {
             });
         }
     });
-
-
-    // thingy.innerHTML += success.description;
-
-    // success.Datastreams.forEach(val => {
-    //     thingy.innerHTML += val.name;
-    //     thingy.innerHTML += val.description; // when clicked, the observations are added to the graph
-    // });
-    //
-
-
 
 }
