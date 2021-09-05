@@ -12,6 +12,9 @@ li:hover{
     cursor: pointer;
 }
 
+h1{
+}
+
 #config{
     display: block;
     margin: 5px 5px 5px 20px ;
@@ -22,8 +25,8 @@ li:hover{
     display: block;
     margin: 5px ;
     float: left;
-
 }
+
 
 #position{
     display: block;
@@ -31,12 +34,28 @@ li:hover{
     float: left;
 }
 
-#thingy{
+#thingy {
+    display: inline-flex;
+    flex-shrink: initial;
+    flex-direction: column;
+    outline: thin black solid;
     position: relative;
-    height: 50vh;
+    height: 100vh;
     width: 24%;
     float: left;
-    outline: thin solid black;
+}
+
+#thingy div{
+    flex-grow: 1;
+    height: 50%;
+    outline: thin black solid;
+}
+
+
+#thingy div{
+    flex-grow: 2;
+    height: 25vh;
+    outline: 1px solid black;
 }
 
 #map{
@@ -47,6 +66,8 @@ li:hover{
 }
 
 #chart{
+    width: 75%;
+    float: right;
     height: 48vh;
 }
 

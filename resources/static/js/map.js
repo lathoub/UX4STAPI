@@ -1,7 +1,7 @@
-// Leaflet map
-var map = L.map('map').setView([0, 0], 12);
+// Leaf map
+let map = L.map('map').setView([0, 0], 12);
 
-var stapiBaseUrl = 'http://stapi.snuffeldb.synology.me/FROST-Server/v1.0'
+let stapiBaseUrl = 'http://stapi.snuffeldb.synology.me/FROST-Server/v1.0'
 
 L.tileLayer('http://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png', {
     attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="http://cartodb.com/attributions">CartoDB</a>',
@@ -14,11 +14,11 @@ $.getJSON(stapiBaseUrl + "/Things?$expand=Locations,Datastreams($orderby=name as
 
     // Layergroups allows for multiple Things to be at the same location
     // and still be able to select them indivisually
-    var markersClusterGroup = L.markerClusterGroup().addTo(map);
+    let markersClusterGroup = L.markerClusterGroup().addTo(map);
     markersClusterGroup.on("click", markerOnClick);
 
     // Convert the Locations into GeoJSON Features
-    var geoJsonFeatures = things.value.map(function (thing) {
+    let geoJsonFeatures = things.value.map(function (thing) {
         return {
             type: 'Feature',
             id: thing['@iot.id'],
@@ -31,7 +31,7 @@ $.getJSON(stapiBaseUrl + "/Things?$expand=Locations,Datastreams($orderby=name as
     });
 
     // Add geojson to LayerGroup
-    var geoJsonLayerGroup = L.geoJSON(geoJsonFeatures);
+    let geoJsonLayerGroup = L.geoJSON(geoJsonFeatures);
     geoJsonLayerGroup.addTo(markersClusterGroup);
 
     // Zoom in the map so that it fits the Things
@@ -40,7 +40,7 @@ $.getJSON(stapiBaseUrl + "/Things?$expand=Locations,Datastreams($orderby=name as
 
 // Create empty chart. Observation will be added
 // to the chart when the user click on the Market and Datastream
-var chart = new Highcharts.StockChart("chart", {
+let chart = new Highcharts.StockChart("chart", {
     title: { text: "" },
     legend: { enabled: true },
     series: []
@@ -50,12 +50,11 @@ var chart = new Highcharts.StockChart("chart", {
 // event handler that picks up on Marker clicks
 function markerOnClick(event) {
 
-    var thing = event.layer.feature;
+    let thing = event.layer.feature;
 
-    // TODO: iets met Bootstrap cards?
-    // https://getbootstrap.com/docs/4.0/components/card/
 
-    var html = '';
+
+    let html = '';
     html += '<h1>' + thing.name + '</h1>';
     html += '<h2>' + thing.location.name + '</h2>';
     html += '<h3>' + 'Datastreams:' + '</h3>';
@@ -63,25 +62,27 @@ function markerOnClick(event) {
         html += '<li>' + datastream.name + '</li>'
     });
 
-    html = '<ul id="datastreamlist">' + html + '</ul>'
-        + '<button id="config">Configure</button>'
+    html = '<ul id="datastreamlist">' + html +  '<button id="config">Configure</button>'
         + '<button id="position">Position</button>'
-        + '<button id="delete">Delete</button>'
-
+        + '<button id="delete">Delete</button>' + '</ul>'
 
     document.querySelector('#thingy').innerHTML = html;
+
+
+
+
 
     document.getElementById("datastreamlist").addEventListener("click", function (e) {
         if (e.target && e.target.nodeName === "LI") {
 
-            var datastream = thing.datastreams.find(ds => ds.name == e.target.innerText);
+            let datastream = thing.datastreams.find(ds => ds.name == e.target.innerText);
             if (datastream == undefined) { } // TODO: error handling
 
-            var observationsUrl = stapiBaseUrl + '/Things(' + thing.id + ')/Datastreams(' + datastream['@iot.id'] + ')?$expand=Observations($orderby=resultTime asc)';
+            let observationsUrl = stapiBaseUrl + '/Things(' + thing.id + ')/Datastreams(' + datastream['@iot.id'] + ')?$expand=Observations($orderby=resultTime asc)';
             $.getJSON(observationsUrl, function (datastream) {
 
-                var obs = datastream.Observations.map(function (observation) {
-                    var timestamp = moment(observation.phenomenonTime).valueOf();
+                let obs = datastream.Observations.map(function (observation) {
+                    let timestamp = moment(observation.phenomenonTime).valueOf();
                     return [timestamp, parseFloat(observation.result)];
                 });
 
@@ -107,19 +108,23 @@ function markerOnClick(event) {
         }
     });
 
-    var configtest = document.getElementById('config');
+
+    let configtest = document.getElementById('config');
     configtest.onclick = function() {
-        console.log('Config button test');
+        let thingy = document.getElementById("thingy");
+        let additionalthing = document.createElement("div");
+        additionalthing.innerHTML = html;
+        thingy.appendChild(additionalthing);
     }
 
-    var positiontest = document.getElementById('position');
+    let positiontest = document.getElementById('position');
     positiontest.onclick = function() {
         console.log('Position button test');
     }
 
-    var deletetest = document.getElementById('delete');
+    let deletetest = document.getElementById('delete');
     deletetest.onclick = function() {
-        console.log('Delete button test');
+        console.log('Dee button test');
     }
 
 }
