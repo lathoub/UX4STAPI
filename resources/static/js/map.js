@@ -66,7 +66,13 @@ function markerOnClick(event) {
         + '<button id="position">Position</button>'
         + '<button id="delete">Delete</button>' + '</ul>'
 
-    document.querySelector('#thingy').innerHTML = html;
+
+    let thingy = document.getElementById("thingy");
+    let additionalthing = document.createElement("div");
+    // additionalthing.id Zorgen voor uniek ID
+    additionalthing.innerHTML = html;
+    thingy.appendChild(additionalthing);
+    console.log(thingy);
 
 
 
@@ -111,10 +117,7 @@ function markerOnClick(event) {
 
     let configtest = document.getElementById('config');
     configtest.onclick = function() {
-        let thingy = document.getElementById("thingy");
-        let additionalthing = document.createElement("div");
-        additionalthing.innerHTML = html;
-        thingy.appendChild(additionalthing);
+
     }
 
     let positiontest = document.getElementById('position');

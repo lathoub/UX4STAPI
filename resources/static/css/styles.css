@@ -36,25 +36,18 @@ h1{
 
 #thingy {
     display: inline-flex;
-    flex-shrink: initial;
     flex-direction: column;
     outline: thin black solid;
     position: relative;
-    height: 100vh;
+    height: 50vh;
     width: 24%;
+    overflow-y: auto;
     float: left;
 }
 
+
 #thingy div{
     flex-grow: 1;
-    height: 50%;
-    outline: thin black solid;
-}
-
-
-#thingy div{
-    flex-grow: 2;
-    height: 25vh;
     outline: 1px solid black;
 }
 
@@ -66,8 +59,7 @@ h1{
 }
 
 #chart{
-    width: 75%;
-    float: right;
+    width: 100%;
     height: 48vh;
 }
 
