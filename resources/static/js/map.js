@@ -60,21 +60,24 @@ function markerOnClick(event) {
         html += '<li>' + datastream.name + '</li>'
     });
 
-    html = '<ul id="datastreamlist">' + '<span id="close">x</span>' + html + '<button id="config">Configure</button>'
+    html = '<ul id="datastreamlist">' + '<span id="close' + thing.name + '">x</span>' + html + '<button id="config">Configure</button>'
         + '<button id="position">Position</button>'
         + '<button id="delete">Delete</button>' + '</ul>'
 
 
     let thingy = document.getElementById("thingy");
     let additionalthing = document.createElement("div");
+
+    additionalthing.setAttribute("id",thing.name);
+
     additionalthing.innerHTML = html;
     thingy.appendChild(additionalthing);
     console.log(thingy);
 
-        document.getElementById("close").onclick = function() {
+        document.getElementById("close" + thing.name).onclick = function() {
             this.parentNode.parentNode.parentNode
                 .removeChild(this.parentNode.parentNode);
-            return false;
+            chart.linkedSeries.remove();
         }
 
     document.getElementById("datastreamlist").addEventListener("click", function (e) {
