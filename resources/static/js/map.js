@@ -41,11 +41,10 @@ $.getJSON(stapiBaseUrl + "/Things?$expand=Locations,Datastreams($orderby=name as
 // Create empty chart. Observation will be added
 // to the chart when the user click on the Market and Datastream
 let chart = new Highcharts.StockChart("chart", {
-    title: {text: ""},
-    legend: {enabled: true},
+    title: { text: "" },
+    legend: { enabled: true },
     series: []
 });
-
 
 // event handler that picks up on Marker clicks
 function markerOnClick(event) {
@@ -68,20 +67,22 @@ function markerOnClick(event) {
     let thingy = document.getElementById("thingy");
     let additionalthing = document.createElement("div");
 
-    additionalthing.setAttribute("id",thing.name);
+    additionalthing.setAttribute("id", thing.name);
 
     additionalthing.innerHTML = html;
     thingy.appendChild(additionalthing);
     console.log(thingy);
 
-        document.getElementById("close" + thing.name).onclick = function() {
-            this.parentNode.parentNode.parentNode
-                .removeChild(this.parentNode.parentNode);
-            document.getElementById("highcharts-0").remove();
-        }
+    document.getElementById("close" + thing.name).onclick = function () {
+        this.parentNode.parentNode.parentNode
+            .removeChild(this.parentNode.parentNode);
+        document.getElementById("highcharts-0").remove();
+    }
 
     document.getElementById("datastreamlist").addEventListener("click", function (e) {
         if (e.target && e.target.nodeName === "LI") {
+
+            console.log(thiung.id)
 
             let datastream = thing.datastreams.find(ds => ds.name == e.target.innerText);
             if (datastream == undefined) {
