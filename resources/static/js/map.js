@@ -114,9 +114,10 @@ function markerOnClick(event) {
                         zIndex: 3
                     })
                     .on('click', function () {
-                        if (chart.series[0]) {
-                            chart.series[0].remove();
+                        for(let i = chart.series.length - 1; i >= 0; i--) {
+                            chart.series[i].remove(false);
                         }
+                        chart.redraw();
                     })
                     .add();
 
