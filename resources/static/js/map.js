@@ -41,8 +41,8 @@ $.getJSON(stapiBaseUrl + "/Things?$expand=Locations,Datastreams($orderby=name as
 // Create empty chart. Observation will be added
 // to the chart when the user click on the Market and Datastream
 let chart = new Highcharts.StockChart("chart", {
-    title: { text: "" },
-    legend: { enabled: true },
+    title: {text: ""},
+    legend: {enabled: true},
     series: []
 });
 
@@ -52,8 +52,6 @@ function markerOnClick(event) {
 
     let thing = event.layer.feature;
 
-
-
     let html = '';
     html += '<h1>' + thing.name + '</h1>';
     html += '<h2>' + thing.location.name + '</h2>';
@@ -62,27 +60,29 @@ function markerOnClick(event) {
         html += '<li>' + datastream.name + '</li>'
     });
 
-    html = '<ul id="datastreamlist">' + html +  '<button id="config">Configure</button>'
+    html = '<ul id="datastreamlist">' + '<span id="close">x</span>' + html + '<button id="config">Configure</button>'
         + '<button id="position">Position</button>'
         + '<button id="delete">Delete</button>' + '</ul>'
 
 
     let thingy = document.getElementById("thingy");
     let additionalthing = document.createElement("div");
-    // additionalthing.id Zorgen voor uniek ID
     additionalthing.innerHTML = html;
     thingy.appendChild(additionalthing);
     console.log(thingy);
 
-
-
-
+        document.getElementById("close").onclick = function() {
+            this.parentNode.parentNode.parentNode
+                .removeChild(this.parentNode.parentNode);
+            return false;
+        }
 
     document.getElementById("datastreamlist").addEventListener("click", function (e) {
         if (e.target && e.target.nodeName === "LI") {
 
             let datastream = thing.datastreams.find(ds => ds.name == e.target.innerText);
-            if (datastream == undefined) { } // TODO: error handling
+            if (datastream == undefined) {
+            } // TODO: error handling
 
             let observationsUrl = stapiBaseUrl + '/Things(' + thing.id + ')/Datastreams(' + datastream['@iot.id'] + ')?$expand=Observations($orderby=resultTime asc)';
             $.getJSON(observationsUrl, function (datastream) {
@@ -99,7 +99,6 @@ function markerOnClick(event) {
                 }
 
 
-
                 // Add observations to the chart
                 chart.addSeries({
                     id: 'dada',
@@ -110,23 +109,24 @@ function markerOnClick(event) {
             });
 
 
-
         }
     });
 
 
+
+
     let configtest = document.getElementById('config');
-    configtest.onclick = function() {
+    configtest.onclick = function () {
 
     }
 
     let positiontest = document.getElementById('position');
-    positiontest.onclick = function() {
+    positiontest.onclick = function () {
         console.log('Position button test');
     }
 
     let deletetest = document.getElementById('delete');
-    deletetest.onclick = function() {
+    deletetest.onclick = function () {
         console.log('Dee button test');
     }
 
