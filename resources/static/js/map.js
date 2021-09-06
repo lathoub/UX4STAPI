@@ -41,8 +41,8 @@ $.getJSON(stapiBaseUrl + "/Things?$expand=Locations,Datastreams($orderby=name as
 // Create empty chart. Observation will be added
 // to the chart when the user click on the Market and Datastream
 let chart = new Highcharts.StockChart("chart", {
-    title: { text: "" },
-    legend: { enabled: true },
+    title: {text: ""},
+    legend: {enabled: true},
     series: []
 });
 
@@ -79,10 +79,10 @@ function markerOnClick(event) {
         document.getElementById("highcharts-0").remove();
     }
 
-    document.getElementById("datastreamlist").addEventListener("click", function (e) {
+    additionalthing.addEventListener("click", function (e) {
         if (e.target && e.target.nodeName === "LI") {
 
-            console.log(thiung.id)
+            console.log(thing.id)
 
             let datastream = thing.datastreams.find(ds => ds.name == e.target.innerText);
             if (datastream == undefined) {
@@ -102,7 +102,6 @@ function markerOnClick(event) {
                     // Single replaces
                 }
 
-
                 // Add observations to the chart
                 chart.addSeries({
                     id: thing.name,
@@ -110,13 +109,22 @@ function markerOnClick(event) {
                     data: obs
                 });
 
+                chart.renderer.button('Clear chart', 300, 5)
+                    .attr({
+                        zIndex: 3
+                    })
+                    .on('click', function () {
+                        if (chart.series[0]) {
+                            chart.series[0].remove();
+                        }
+                    })
+                    .add();
+
             });
 
 
         }
     });
-
-
 
 
     let configtest = document.getElementById('config');
