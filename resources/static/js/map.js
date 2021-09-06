@@ -77,7 +77,7 @@ function markerOnClick(event) {
         document.getElementById("close" + thing.name).onclick = function() {
             this.parentNode.parentNode.parentNode
                 .removeChild(this.parentNode.parentNode);
-            chart.linkedSeries.remove();
+            document.getElementById("highcharts-0").remove();
         }
 
     document.getElementById("datastreamlist").addEventListener("click", function (e) {
@@ -104,7 +104,7 @@ function markerOnClick(event) {
 
                 // Add observations to the chart
                 chart.addSeries({
-                    id: 'dada',
+                    id: thing.name,
                     name: "Snuffel " + thing.name + '(' + thing.location.name + ')' + ", " + datastream.name,
                     data: obs
                 });
