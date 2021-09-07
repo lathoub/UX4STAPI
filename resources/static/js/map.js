@@ -45,7 +45,16 @@ let chart = new Highcharts.Chart("chart", {
     legend: { enabled: true },
     yAxis:{title: ""},
     xAxis:{type:"datetime"},
-    series: []
+    series: [],
+    exporting: {
+        buttons: {
+            contextButton: {
+                align:'left',
+                   x: 0,
+                   y:400
+            }
+        }
+    },
 });
 
 // event handler that picks up on Marker clicks
