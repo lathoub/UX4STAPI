@@ -6,14 +6,26 @@
     <title>Maptest</title>
     <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
     <link rel="stylesheet" type="text/css" href="resources/static/css/styles.css">
+
+<!--    Leaflet markers     -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.0.3/dist/leaflet.css" />
     <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.3.0/dist/MarkerCluster.css" />
     <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.3.0/dist/MarkerCluster.Default.css" />
 
+<!--    Highcharts        -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.14.1/moment.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/highstock/4.2.6/highstock.js"></script>
+<!--    <script src="https://cdnjs.cloudflare.com/ajax/libs/highstock/4.2.6/highstock.js"></script>-->
 
+
+<!--    Highcharts upgrade test     -->
+    <script src="https://code.highcharts.com/highcharts.js"></script>
+    <script src="https://code.highcharts.com/modules/series-label.js"></script>
+    <script src="https://code.highcharts.com/modules/exporting.js"></script>
+    <script src="https://code.highcharts.com/modules/export-data.js"></script>
+    <script src="https://code.highcharts.com/modules/accessibility.js"></script>
+
+<!--    Leaflet map     -->
     <script src="https://unpkg.com/leaflet@1.0.3/dist/leaflet.js"></script>
     <script src="https://unpkg.com/leaflet.markercluster@1.3.0/dist/leaflet.markercluster.js"></script>
 </head>
@@ -23,8 +35,7 @@
 <body>
     <div id="thingy"></div>
     <div id="map"></div>
-    <div id="chart">
-    </div>
+    <div id="chart" class="highcharts-figure"></div>
     <script type="text/javascript" src="resources/static/js/map.js"></script>
 </body>
 

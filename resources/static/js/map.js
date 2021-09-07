@@ -40,9 +40,11 @@ $.getJSON(stapiBaseUrl + "/Things?$expand=Locations,Datastreams($orderby=name as
 
 // Create empty chart. Observation will be added
 // to the chart when the user click on the Market and Datastream
-let chart = new Highcharts.StockChart("chart", {
-    title: { text: "" },
+let chart = new Highcharts.Chart("chart", {
+    title: { text: ""},
     legend: { enabled: true },
+    yAxis:{title: ""},
+    xAxis:{type:"datetime"},
     series: []
 });
 
@@ -64,21 +66,23 @@ function markerOnClick(event) {
         + '<button id="delete">Delete</button>' + '</ul>'
 
 
+    //Add things to list on marker click
     let thingy = document.getElementById("thingy");
     let additionalthing = document.createElement("div");
-
     additionalthing.setAttribute("id", thing.name);
-
     additionalthing.innerHTML = html;
     thingy.appendChild(additionalthing);
     console.log(thingy);
+    console.log(thing.name);
 
+
+    //Close opened things
     document.getElementById("close" + thing.name).onclick = function () {
         this.parentNode.parentNode.parentNode
             .removeChild(this.parentNode.parentNode);
-        document.getElementById("highcharts-0").remove();
     }
 
+    //Open chart of selected datastream
     additionalthing.addEventListener("click", function (e) {
         if (e.target && e.target.nodeName === "LI") {
 
@@ -135,7 +139,7 @@ function markerOnClick(event) {
 
     let positiontest = document.getElementById('position');
     positiontest.onclick = function () {
-        console.log('Position button test');
+        console.log("");
     }
 
     let deletetest = document.getElementById('delete');
