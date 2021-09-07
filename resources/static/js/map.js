@@ -41,8 +41,8 @@ $.getJSON(stapiBaseUrl + "/Things?$expand=Locations,Datastreams($orderby=name as
 // Create empty chart. Observation will be added
 // to the chart when the user click on the Market and Datastream
 let chart = new Highcharts.StockChart("chart", {
-    title: {text: ""},
-    legend: {enabled: true},
+    title: { text: "" },
+    legend: { enabled: true },
     series: []
 });
 
@@ -114,7 +114,7 @@ function markerOnClick(event) {
                         zIndex: 3
                     })
                     .on('click', function () {
-                        for(let i = chart.series.length - 1; i >= 0; i--) {
+                        for (let i = chart.series.length - 1; i >= 0; i--) {
                             chart.series[i].remove(false);
                         }
                         chart.redraw();
@@ -140,7 +140,13 @@ function markerOnClick(event) {
 
     let deletetest = document.getElementById('delete');
     deletetest.onclick = function () {
-        console.log('Dee button test');
+        let deviceName = prompt("Enter the device name to confirm deletion:", "");
+        if (deviceName) { }
+        if (deviceName == 42) {
+            console.log('delete device');
+        }
+        else
+            alert('device name did not match, delete aborted');
     }
 
 }
