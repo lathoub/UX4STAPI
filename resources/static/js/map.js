@@ -141,13 +141,22 @@ function markerOnClick(event) {
     let deletetest = document.getElementById('delete');
     deletetest.onclick = function () {
         let deviceName = prompt("Enter the device name to confirm deletion:", "");
-        if (deviceName) { }
-        if (deviceName == 42) {
-            console.log('delete device');
-        }
-        else
-            alert('device name did not match, delete aborted');
-    }
+        if (deviceName) {
 
+            console.log(deletetest); // TODO: get device name from parent card
+
+            if (deviceName == 42) {
+                $.ajax({
+                    url: stapiBaseUrl + '/Things(' + deviceName + ')',
+                    type: 'DELETE',
+                    success: function (result) {
+                        console.log('delete device success');
+                    }
+                });
+            }
+            else
+                alert('device name did not match, delete aborted');
+        }
+    }
 }
 
