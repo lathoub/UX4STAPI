@@ -40,21 +40,13 @@ $.getJSON(stapiBaseUrl + "/Things?$expand=Locations,Datastreams($orderby=name as
 
 // Create empty chart. Observation will be added
 // to the chart when the user click on the Market and Datastream
+
 let chart = new Highcharts.Chart("chart", {
     title: { text: ""},
     legend: { enabled: true },
     yAxis:{title: ""},
     xAxis:{type:"datetime"},
-    series: [],
-    exporting: {
-        buttons: {
-            contextButton: {
-                align:'left',
-                   x: 0,
-                   y:400
-            }
-        }
-    },
+    series: []
 });
 
 // event handler that picks up on Marker clicks

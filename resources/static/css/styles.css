@@ -28,7 +28,7 @@ h1{
 }
 
 
-#location{
+#position{
     display: block;
     margin: 5px ;
     float: left;
@@ -69,6 +69,7 @@ h1{
 }
 
 #map{
+    z-index: 0;
     margin-bottom: 5px;
     height: 50vh;
     width: 75%;
@@ -76,10 +77,15 @@ h1{
 }
 
 #chart{
-    z-index: 0;
     width: 100%;
     height: 48vh;
 }
+
+.highcharts-contextmenu{
+    position: absolute !important;
+    top: 15vh !important;
+}
+
 
 
 .highcharts-data-table table {
