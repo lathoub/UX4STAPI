@@ -153,6 +153,8 @@ function markerOnClick(event) {
             newLocation.location = {}
             newLocation.location.type = 'point'
             newLocation.location.coordinates = [lat, lon]
+
+            var deviceName = '' // TODO: zelfde als hieronder, toegang tot deviceName??
 /*
             $.post(stapiBaseUrl + '/Things(' + deviceName + ')/Locations', newLocation, function (data) {
                 $(".result").html(data);
