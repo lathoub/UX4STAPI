@@ -41,10 +41,10 @@ $.getJSON(stapiBaseUrl + "/Things?$expand=Locations,Datastreams($orderby=name as
 // Create empty chart. Observation will be added
 // to the chart when the user click on the Market and Datastream
 let chart = new Highcharts.Chart("chart", {
-    title: { text: ""},
+    title: { text: "" },
     legend: { enabled: true },
-    yAxis:{title: ""},
-    xAxis:{type:"datetime"},
+    yAxis: { title: "" },
+    xAxis: { type: "datetime" },
     series: []
 });
 
@@ -62,7 +62,7 @@ function markerOnClick(event) {
     });
 
     html = '<ul id="datastreamlist">' + '<span id="close' + thing.name + '">x</span>' + html + '<button id="config">Configure</button>'
-        + '<button id="position">Position</button>'
+        + '<button id="location">Location</button>'
         + '<button id="delete">Delete</button>' + '</ul>'
 
 
@@ -137,9 +137,29 @@ function markerOnClick(event) {
 
     }
 
-    let positiontest = document.getElementById('position');
-    positiontest.onclick = function () {
-        console.log("");
+    let locationtest = document.getElementById('location');
+    locationtest.onclick = function () {
+        let locationName = prompt("Address or name of the location:", "");
+        if (locationName && locationName != '') {
+            // TODO: geocoder from address to lat/long
+            var lat = 51.1
+            var lng = 4.1
+
+            // POST new location to database
+            var newLocation = {};
+            newLocation.name = locationName
+            newLocation.description = locationName
+            newLocation.encodingType = 'application/vnd.geo+json'
+            newLocation.location = {}
+            newLocation.location.type = 'point'
+            newLocation.location.coordinates = [lat, lon]
+/*
+            $.post(stapiBaseUrl + '/Things(' + deviceName + ')/Locations', newLocation, function (data) {
+                $(".result").html(data);
+                // TODO: refresh the map: 1) collapse the cluster and 2) refresh markers
+            });
+*/
+        }
     }
 
     let deletetest = document.getElementById('delete');
