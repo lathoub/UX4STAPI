@@ -131,14 +131,14 @@ function markerOnClick(event) {
     });
 
 
-    let configtest = document.getElementById('config');
-    configtest.onclick = function () {
+    let configButton = document.getElementById('config');
+    configButton.onclick = function () {
 
 
     }
 
-    let locationtest = document.getElementById('location');
-    locationtest.onclick = function () {
+    let locationButton = document.getElementById('location');
+    locationButton.onclick = function () {
         let address = prompt("Enter new address or location name for the device:", "");
         if (address && address != '') {
 
@@ -165,8 +165,8 @@ function markerOnClick(event) {
         }
     }
 
-    let deletetest = document.getElementById('delete');
-    deletetest.onclick = function () {
+    let deleteButton = document.getElementById('delete');
+    deleteButton.onclick = function () {
         let deviceName = prompt("Enter the device name to confirm deletion:", "");
         if (deviceName) {
 
