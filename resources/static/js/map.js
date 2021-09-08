@@ -55,10 +55,10 @@ let chart = new Highcharts.Chart("chart", {
 
 // event handler that picks up on Marker clicks
 function markerOnClick(event) {
-
     let thing = event.layer.feature;
-
     let html = '';
+
+    //Fill up div with thing information
     html += '<h1>' + thing.name + '</h1>';
     html += '<h2>' + thing.location.name + '</h2>';
     html += '<h3>' + 'Datastreams:' + '</h3>';
