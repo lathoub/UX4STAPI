@@ -94,6 +94,8 @@ function markerOnClick(event) {
     document.getElementById("close" + thing.name).onclick = function () {
         this.parentNode.parentNode.parentNode
             .removeChild(this.parentNode.parentNode);
+        selectedMarkers = selectedMarkers.filter(additionalthing=> additionalthing!== thing.name);
+        return false;
     }
 
 
@@ -147,13 +149,13 @@ function markerOnClick(event) {
     });
 
 
-    let configButton = document.getElementById('config');
-    configButton.onclick = function () {
+    // let configButton = document.getElementById('config');
+    // configButton.onclick = function () {
+    //
+    //
+    // }
 
-
-    }
-
-    let locationButton = document.getElementById('location');
+    let locationButton = document.getElementById('location' + thing.name);
     locationButton.onclick = function () {
         let address = prompt("Enter new address or location name for the device:", "");
         if (address && address !== '') {
