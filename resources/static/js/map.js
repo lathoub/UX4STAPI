@@ -40,10 +40,10 @@ $.getJSON(stapiBaseUrl + "/Things?$expand=Locations,Datastreams($orderby=name as
 // to the chart when the user click on the Market and Datastream
 
 let chart = new Highcharts.Chart("chart", {
-    title: { text: "" },
-    legend: { enabled: true },
-    yAxis: { title: "" },
-    xAxis: { type: "datetime" },
+    title: {text: ""},
+    legend: {enabled: true},
+    yAxis: {title: ""},
+    xAxis: {type: "datetime"},
     series: []
 });
 
@@ -60,9 +60,10 @@ function markerOnClick(event) {
         html += '<li>' + datastream.name + '</li>'
     });
 
-    html = '<ul id="datastreamlist">' + '<span id="close' + thing.name + '">x</span>' + html + '<button id="config">Configure</button>'
-        + '<button id="location">Location</button>'
-        + '<button id="delete">Delete</button>' + '</ul>'
+    html = '<ul id="datastreamlist">' + '<span id="close' + thing.name + '">x</span>' + html + '</ul>'
+        + '<button id="config' + thing.name + '">Configure</button>'
+        + '<button id="location' + thing.name + '">Location</button>'
+        + '<button id="delete' + thing.name + '">Delete</button>'
 
 
     //Add things to list on marker click
@@ -71,6 +72,8 @@ function markerOnClick(event) {
     additionalthing.setAttribute("id", thing.name);
     additionalthing.innerHTML = html;
     thingy.appendChild(additionalthing);
+
+
     console.log(thingy);
     console.log(thing.name);
 
@@ -140,7 +143,7 @@ function markerOnClick(event) {
     let locationButton = document.getElementById('location');
     locationButton.onclick = function () {
         let address = prompt("Enter new address or location name for the device:", "");
-        if (address && address != '') {
+        if (address && address !== '') {
 
             // TODO geocode from address to lat,lng
             var lat = 51
@@ -154,7 +157,7 @@ function markerOnClick(event) {
             newLocation.location.type = 'point'
             newLocation.location.coordinates = [lat, lng]
 
-            var deviceName = '' // TODO: get device name from parent card
+            let deviceName = this.parentElement.id;
 
             $.post(stapiBaseUrl + '/Things(' + deviceName + ')/Locations', newLocation)
                 .done(function (data) {
@@ -165,23 +168,21 @@ function markerOnClick(event) {
         }
     }
 
-    let deleteButton = document.getElementById('delete');
+    let deleteButton = document.getElementById('delete' + thing.name);
     deleteButton.onclick = function () {
-        let deviceName = prompt("Enter the device name to confirm deletion:", "");
-        if (deviceName) {
+        let inDeviceName = prompt("Enter the device name to confirm deletion:", "");
+        if (inDeviceName) {
 
-            console.log(deletetest); // TODO: get device name from parent card
-
-            if (deviceName == 42) {
-                $.ajax({
-                    url: stapiBaseUrl + '/Things(' + deviceName + ')',
-                    type: 'DELETE',
-                    success: function (result) {
-                        console.log('delete device success');
-                    }
-                });
-            }
-            else
+            let deviceName = this.parentElement.id;
+            if (inDeviceName === deviceName) {
+                // $.ajax({
+                //     url: stapiBaseUrl + '/Things(' + deviceName + ')',
+                //     type: 'DELETE',
+                //     success: function (result) {
+                //         console.log('delete device success');
+                //     }
+                // });
+            } else
                 alert('device name did not match, delete aborted');
         }
     }
