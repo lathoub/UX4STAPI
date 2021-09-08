@@ -42,10 +42,10 @@ $.getJSON(stapiBaseUrl + "/Things?$expand=Locations,Datastreams($orderby=name as
 // to the chart when the user click on the Market and Datastream
 
 let chart = new Highcharts.Chart("chart", {
-    title: { text: ""},
+    title: { text: "" },
     legend: { enabled: true },
-    yAxis:{title: ""},
-    xAxis:{type:"datetime"},
+    yAxis: { title: "" },
+    xAxis: { type: "datetime" },
     series: []
 });
 
@@ -63,7 +63,7 @@ function markerOnClick(event) {
     });
 
     html = '<ul id="datastreamlist">' + '<span id="close' + thing.name + '">x</span>' + html + '<button id="config">Configure</button>'
-        + '<button id="position">Position</button>'
+        + '<button id="location">Location</button>'
         + '<button id="delete">Delete</button>' + '</ul>'
 
 
@@ -136,11 +136,35 @@ function markerOnClick(event) {
     let configtest = document.getElementById('config');
     configtest.onclick = function () {
 
+
     }
 
-    let positiontest = document.getElementById('position');
-    positiontest.onclick = function () {
-        console.log("");
+    let locationtest = document.getElementById('location');
+    locationtest.onclick = function () {
+        let address = prompt("Enter new address or location name for the device:", "");
+        if (address && address != '') {
+
+            // TODO geocode from address to lat,lng
+            var lat = 51
+            var lng = 4
+
+            var newLocation = {}
+            newLocation.name = address
+            newLocation.description = address
+            newLocation.encodingType = 'application/vnd.geo+json'
+            newLocation.location = {}
+            newLocation.location.type = 'point'
+            newLocation.location.coordinates = [lat, lng]
+
+            var deviceName = '' // TODO: get device name from parent card
+
+            $.post(stapiBaseUrl + '/Things(' + deviceName + ')/Locations', newLocation)
+                .done(function (data) {
+                    console.log(data); // TODO: get device name from parent card
+                    // TODO: refresh map
+                    // indivisual marker should be relocatable (for admin)
+                });
+        }
     }
 
     let deletetest = document.getElementById('delete');
