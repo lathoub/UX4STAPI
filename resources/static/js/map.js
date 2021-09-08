@@ -1,8 +1,13 @@
-// Leaf map
+// Leaflet map initial view
 let map = L.map('map').setView([0, 0], 12);
 
+//Empty array for selected markers
+let selectedMarkers = [];
+
+//Base server URL
 let stapiBaseUrl = 'https://stapi.snuffeldb.synology.me/FROST-Server/v1.0'
 
+//Leaflet map
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
 }).addTo(map);
@@ -47,6 +52,7 @@ let chart = new Highcharts.Chart("chart", {
     series: []
 });
 
+
 // event handler that picks up on Marker clicks
 function markerOnClick(event) {
 
@@ -66,12 +72,18 @@ function markerOnClick(event) {
         + '<button id="delete' + thing.name + '">Delete</button>'
 
 
-    //Add things to list on marker click
+    //Add things to list on marker click if unique
+    if (selectedMarkers.includes(thing.name)) {
+        return alert("Device already selected.");
+
+    }
     let thingy = document.getElementById("thingy");
     let additionalthing = document.createElement("div");
     additionalthing.setAttribute("id", thing.name);
     additionalthing.innerHTML = html;
     thingy.appendChild(additionalthing);
+
+    selectedMarkers.push(thing.name);
 
 
     console.log(thingy);
@@ -83,6 +95,7 @@ function markerOnClick(event) {
         this.parentNode.parentNode.parentNode
             .removeChild(this.parentNode.parentNode);
     }
+
 
     //Open chart of selected datastream
     additionalthing.addEventListener("click", function (e) {
