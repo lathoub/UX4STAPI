@@ -67,10 +67,9 @@ function markerOnClick(event) {
     });
 
     html = '<ul id="datastreamlist">' + '<span id="close' + thing.name + '">x</span>' + html + '</ul>'
-        + '<button id="config' + thing.name + '">Configure</button>'
-        + '<button id="location' + thing.name + '">Location</button>'
-        + '<button id="delete' + thing.name + '">Delete</button>'
-
+        + '<button type="button" class="btn btn-primary" id="config' + thing.name + '">Configure</button>'
+        + '<button type="button" class="btn btn-primary" id="location' + thing.name + '">Location</button>'
+        + '<button type="button" class="btn btn-danger" id="delete' + thing.name + '">Delete</button>'
 
     //Add things to list on marker click if unique
     if (selectedMarkers.includes(thing.name)) {
