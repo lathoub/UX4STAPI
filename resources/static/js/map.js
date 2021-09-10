@@ -45,10 +45,10 @@ $.getJSON(stapiBaseUrl + "/Things?$expand=Locations,Datastreams($orderby=name as
 // to the chart when the user click on the Market and Datastream
 
 let chart = new Highcharts.Chart("chart", {
-    title: {text: ""},
-    legend: {enabled: true},
-    yAxis: {title: ""},
-    xAxis: {type: "datetime"},
+    title: { text: "" },
+    legend: { enabled: true },
+    yAxis: { title: "" },
+    xAxis: { type: "datetime" },
     series: []
 });
 
@@ -67,9 +67,9 @@ function markerOnClick(event) {
     });
 
     html = '<ul id="datastreamlist">' + '<span id="close' + thing.name + '">x</span>' + html + '</ul>'
-        + '<button type="button" class="btn btn-primary" id="config' + thing.name + '">Configure</button>'
-        + '<button type="button" class="btn btn-primary" id="location' + thing.name + '">Location</button>'
-        + '<button type="button" class="btn btn-danger" id="delete' + thing.name + '">Delete</button>'
+        + '<button type="button" class="btn btn-primary" id="config' + '">Configure</button>'
+        + '<button type="button" class="btn btn-primary" id="location' + '">Location</button>'
+        + '<button type="button" class="btn btn-danger" id="delete' + '">Delete</button>'
 
     //Add things to list on marker click if unique
     if (selectedMarkers.includes(thing.name)) {
@@ -84,16 +84,11 @@ function markerOnClick(event) {
 
     selectedMarkers.push(thing.name);
 
-
-    console.log(thingy);
-    console.log(thing.name);
-
-
-    //Close opened things
+    // Close opened things
     document.getElementById("close" + thing.name).onclick = function () {
         this.parentNode.parentNode.parentNode
             .removeChild(this.parentNode.parentNode);
-        selectedMarkers = selectedMarkers.filter(additionalthing=> additionalthing!== thing.name);
+        selectedMarkers = selectedMarkers.filter(additionalthing => additionalthing !== thing.name);
         return false;
     }
 
@@ -154,7 +149,7 @@ function markerOnClick(event) {
     //
     // }
 
-    let locationButton = document.getElementById('location' + thing.name);
+    let locationButton = document.getElementById('location');
     locationButton.onclick = function () {
         let address = prompt("Enter new address or location name for the device:", "");
         if (address && address !== '') {
@@ -182,7 +177,7 @@ function markerOnClick(event) {
         }
     }
 
-    let deleteButton = document.getElementById('delete' + thing.name);
+    let deleteButton = document.getElementById('delete');
     deleteButton.onclick = function () {
         let inDeviceName = prompt("Enter the device name to confirm deletion:", "");
         if (inDeviceName) {
