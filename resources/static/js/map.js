@@ -72,10 +72,9 @@ function markerOnClick(event) {
         + '<button type="button" class="btn btn-danger" id="delete' + '">Delete</button>'
 
     //Add things to list on marker click if unique
-    if (selectedMarkers.includes(thing.name)) {
-        return alert("Device already selected.");
+    if (selectedMarkers.includes(thing.name)) 
+        return
 
-    }
     let thingy = document.getElementById("thingy");
     let additionalthing = document.createElement("div");
     additionalthing.setAttribute("id", thing.name);
