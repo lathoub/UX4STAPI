@@ -9,7 +9,6 @@ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
 }).addTo(map);
 
-
 fetch(stapiBaseUrl + "/Things?$expand=Locations,Datastreams($orderby=name asc)")
     .then(response => response.json())
     .then(body => {
@@ -31,13 +30,16 @@ fetch(stapiBaseUrl + "/Things?$expand=Locations,Datastreams($orderby=name asc)")
             };
         });
 
-        // Add geojson to LayerGroup
-        let geoJsonLayerGroup = L.geoJSON(geoJsonFeatures);
-        geoJsonLayerGroup.addTo(markersClusterGroup);
-
+        var geoJsonLayerGroup = L.geoJSON(geoJsonFeatures, {
+            pointToLayer: function (feature, latlng) {
+                return L.marker(latlng, {
+                    title: feature.name
+                });
+            }
+        }).addTo(markersClusterGroup);
+        
         // Zoom in the map so that it fits the Things
         map.fitBounds(geoJsonLayerGroup.getBounds());
-
     })
 
 // Create empty chart. Observation will be added
