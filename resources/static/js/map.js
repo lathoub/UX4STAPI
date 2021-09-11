@@ -4,6 +4,7 @@ let map = L.map('map').setView([0, 0], 12);
 //Empty array for selected markers
 let selectedMarkers = [];
 let selectedSeries = [];
+
 //Base server URL
 let stapiBaseUrl = 'https://stapi.snuffeldb.synology.me/FROST-Server/v1.0'
 
@@ -111,10 +112,18 @@ function markerOnClick(event) {
     selectedMarkers.push(thing.name);
 
     // Close opened things
-    document.getElementById("close" + thing.name).onclick = function () {
+    document.getElementById("close" + thing.name).onclick = function (rrr) {
         this.parentNode.parentNode.parentNode
             .removeChild(this.parentNode.parentNode);
-        selectedMarkers = selectedMarkers.filter(additionalthing => additionalthing !== thing.name);
+
+        // remove all datastreams from the series
+        thing.datastreams.forEach(datastream => {
+            selectedSeries = selectedSeries.filter(id => id !== datastream["@iot.id"]);
+        })
+
+        // remove thing from selected Markers
+        selectedMarkers = selectedMarkers.filter(id => id !== thing.name);
+
         chart.get(thing.name).remove(selectedSeries);
         return false;
     }
@@ -129,9 +138,9 @@ function markerOnClick(event) {
 
             // ROBIN: ik heb dit naar boven gebracht, stond in event handler als data binnen kwam.
             // dit kan je reeds vroeger, en wordt nu niet telkens uitgevoerd wanneer data binnenkomt
-            if (selectedSeries.includes(datastream.name))
+            if (selectedSeries.includes(datastream["@iot.id"]))
                 return null;
-            selectedSeries.push(datastream.name);
+            selectedSeries.push(datastream["@iot.id"]);
 
             // Async Await Recursive Function 
             const reqsAsyncWait = async (url) => {
@@ -149,9 +158,17 @@ function markerOnClick(event) {
                 }
             };
 
+            // get the observation from the past 5 days
+            var startDateTime = moment(Date.now()).subtract(3, 'd')
+
             // request the more optimal dataArray for the results
             let observationsUrl = stapiBaseUrl + '/Things(' + thing.id + ')/Datastreams(' + datastream['@iot.id'] + ')'
-                + "/Observations?$orderby=phenomenonTime asc&$count=true&$resultFormat=dataArray"
+                + "/Observations"
+                + "?$count=true"
+                + "&$top=1000"
+                + "&$resultFormat=dataArray"
+                + "&$filter=resultTime%20ge%20" + startDateTime.toISOString()
+                + "&$orderby=resultTime asc"
             fetch(observationsUrl)
                 .then(response => response.json())
                 .then(observations => {
@@ -162,7 +179,7 @@ function markerOnClick(event) {
 
                     const components = observations.value[0].components
                     const dataArray = observations.value[0].dataArray
-                    const it = components.indexOf("phenomenonTime")
+                    const it = components.indexOf("resultTime")
                     const ir = components.indexOf("result")
 
                     const data = dataArray.map(function (observation) {
@@ -177,8 +194,6 @@ function markerOnClick(event) {
                         data: data
                     });
                 })
-
-            // await reqsAsyncWait(observationsUrl)
         }
     });
 
