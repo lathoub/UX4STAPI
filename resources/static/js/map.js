@@ -72,7 +72,7 @@ chart.renderer.button('Clear chart', 300, 5)
             chart.series[i].remove(false);
         }
         chart.redraw();
-        selectedSeries = []; // was je vergeten ;-)
+        selectedSeries = []; // ROBIN was je vergeten ;-)
     })
     .add();
 
