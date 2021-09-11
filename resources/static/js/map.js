@@ -60,9 +60,9 @@ let chart = new Highcharts.Chart("chart", {
 function markerOnClick(event) {
     let thing = event.layer.feature;
 
-    var chunck = ''
+    var datastreams = ''
     thing.datastreams.forEach(function (datastream) {
-        chunck += '<label class="list-group-item"><input class="form-check-input me-1" type="checkbox" value="">' + datastream.name + '<span class="badge bg-primary rounded-pill float-end">14 minutes ago</span></label>'
+        datastreams += '<label class="list-group-item"><input class="form-check-input me-1" type="checkbox" value="">' + datastream.name + '<span class="badge bg-primary rounded-pill float-end">14 minutes ago</span></label>'
     });
 
     var myCard = $('<div class="card card-outline-info" id="bbb">'
@@ -71,9 +71,8 @@ function markerOnClick(event) {
         + '<button type="button" class="btn-close float-end" aria-label="Close"></button>'
         + '</h5>'
         + '<h5 class="card-title">' + thing.location.name + ", " + thing.location.description + '</h5>'
-        + '<h6 class="card-title">DataStreams:</h6>'
         + '<div class="list-group">'
-        + chunck
+        + datastreams
         + '</div>'
         + '</div>');
     myCard.appendTo('#contentPanel');
