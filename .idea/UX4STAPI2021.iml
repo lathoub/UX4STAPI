@@ -18,5 +18,8 @@
     <orderEntry type="library" name="exporting" level="application" />
     <orderEntry type="library" name="export-data" level="application" />
     <orderEntry type="library" name="accessibility" level="application" />
+    <orderEntry type="library" name="data" level="application" />
+    <orderEntry type="library" name="leaflet.markercluster" level="application" />
+    <orderEntry type="library" name="stock-tools" level="application" />
   </component>
 </module>

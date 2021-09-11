@@ -3,7 +3,7 @@ let map = L.map('map').setView([0, 0], 12);
 
 //Empty array for selected markers
 let selectedMarkers = [];
-
+let selectedSeries = [];
 //Base server URL
 let stapiBaseUrl = 'https://stapi.snuffeldb.synology.me/FROST-Server/v1.0'
 
@@ -19,6 +19,8 @@ $.getJSON(stapiBaseUrl + "/Things?$expand=Locations,Datastreams($orderby=name as
     // and still be able to select them indivisually
     let markersClusterGroup = L.markerClusterGroup().addTo(map);
     markersClusterGroup.on("click", markerOnClick);
+
+
 
     // Convert the Locations into GeoJSON Features
     let geoJsonFeatures = things.value.map(function (thing) {
@@ -44,11 +46,19 @@ $.getJSON(stapiBaseUrl + "/Things?$expand=Locations,Datastreams($orderby=name as
 // Create empty chart. Observation will be added
 // to the chart when the user click on the Market and Datastream
 
-let chart = new Highcharts.Chart("chart", {
+let chart = new Highcharts.stockChart("chart", {
     title: { text: "" },
     legend: { enabled: true },
     yAxis: { title: "" },
     xAxis: { type: "datetime" },
+    rangeSelector: {
+        floating: true,
+        y: -65,
+        verticalAlign: 'bottom'
+    },
+    navigator: {
+        margin: 60
+    },
     series: []
 });
 
@@ -72,9 +82,8 @@ function markerOnClick(event) {
         + '<button type="button" class="btn btn-danger" id="delete' + '">Delete</button>'
 
     //Add things to list on marker click if unique
-    if (selectedMarkers.includes(thing.name)) 
+    if (selectedMarkers.includes(thing.name))
         return
-
     let thingy = document.getElementById("thingy");
     let additionalthing = document.createElement("div");
     additionalthing.setAttribute("id", thing.name);
@@ -88,6 +97,7 @@ function markerOnClick(event) {
         this.parentNode.parentNode.parentNode
             .removeChild(this.parentNode.parentNode);
         selectedMarkers = selectedMarkers.filter(additionalthing => additionalthing !== thing.name);
+        chart.get(thing.name).remove(selectedSeries);
         return false;
     }
 
@@ -115,6 +125,13 @@ function markerOnClick(event) {
                 } else {
                     // Single replaces
                 }
+                if (selectedSeries.includes(datastream.name)){
+                    return null ;
+                }
+                else {
+                    selectedSeries.push(datastream.name);
+                }
+                console.log(selectedSeries);
 
                 // Add observations to the chart
                 chart.addSeries({
@@ -122,6 +139,7 @@ function markerOnClick(event) {
                     name: "Snuffel " + thing.name + '(' + thing.location.name + ')' + ", " + datastream.name,
                     data: obs
                 });
+
 
                 chart.renderer.button('Clear chart', 300, 5)
                     .attr({
@@ -134,10 +152,7 @@ function markerOnClick(event) {
                         chart.redraw();
                     })
                     .add();
-
             });
-
-
         }
     });
 
@@ -148,6 +163,7 @@ function markerOnClick(event) {
     //
     // }
 
+    //Location button to change the location for the Thing
     let locationButton = document.getElementById('location');
     locationButton.onclick = function () {
         let address = prompt("Enter new address or location name for the device:", "");
@@ -176,6 +192,7 @@ function markerOnClick(event) {
         }
     }
 
+    //Delete button to delete Thing from server
     let deleteButton = document.getElementById('delete');
     deleteButton.onclick = function () {
         let inDeviceName = prompt("Enter the device name to confirm deletion:", "");
