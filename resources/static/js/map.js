@@ -56,143 +56,33 @@ let chart = new Highcharts.Chart("chart", {
 // event handler that picks up on Marker clicks
 function markerOnClick(event) {
     let thing = event.layer.feature;
-    let html = '';
 
-    //Fill up div with thing information
-    html += '<h1>' + thing.name + '</h1>';
-    html += '<h2>' + thing.location.name + '</h2>';
-    html += '<h3>' + 'Datastreams:' + '</h3>';
+    var chunck = ''
     thing.datastreams.forEach(function (datastream) {
-        html += '<li>' + datastream.name + '</li>'
+        chunck += '<label class="list-group-item"><input class="form-check-input me-1" type="checkbox" value="">' + datastream.name + '</label>'
     });
 
-    html = '<ul id="datastreamlist">' + '<span id="close' + thing.name + '">x</span>' + html + '</ul>'
-        + '<button type="button" class="btn btn-primary" id="config' + '">Configure</button>'
-        + '<button type="button" class="btn btn-primary" id="location' + '">Location</button>'
-        + '<button type="button" class="btn btn-danger" id="delete' + '">Delete</button>'
+    var myCard = $('<div class="card card-outline-info" id="bbb">'
+        + '<h5 class="card-header">'
+        + '<span>' + thing.description + ", " + thing.name + '</span>'
+        + '<button type="button" class="btn-close float-end" aria-label="Close"></button>'
+        + '</h5>'
+        + '<h5 class="card-title">' + thing.location.name + ", " + thing.location.description + '</h5>'
+        + '<h6 class="card-title">DataStreams:</h6>'
+        + '<div class="d-flex flex-wrap">'
+        + chunck
+        + '</div>'
 
-    //Add things to list on marker click if unique
-    if (selectedMarkers.includes(thing.name)) 
-        return
+        + '</div>');
+    myCard.appendTo('#contentPanel');
 
-    let thingy = document.getElementById("thingy");
-    let additionalthing = document.createElement("div");
-    additionalthing.setAttribute("id", thing.name);
-    additionalthing.innerHTML = html;
-    thingy.appendChild(additionalthing);
-
-    selectedMarkers.push(thing.name);
-
-    // Close opened things
-    document.getElementById("close" + thing.name).onclick = function () {
-        this.parentNode.parentNode.parentNode
-            .removeChild(this.parentNode.parentNode);
-        selectedMarkers = selectedMarkers.filter(additionalthing => additionalthing !== thing.name);
-        return false;
-    }
-
-
-    //Open chart of selected datastream
-    additionalthing.addEventListener("click", function (e) {
-        if (e.target && e.target.nodeName === "LI") {
-
-            console.log(thing.id)
-
-            let datastream = thing.datastreams.find(ds => ds.name == e.target.innerText);
-            if (datastream == undefined) {
-            } // TODO: error handling
-
-            let observationsUrl = stapiBaseUrl + '/Things(' + thing.id + ')/Datastreams(' + datastream['@iot.id'] + ')?$expand=Observations($orderby=resultTime asc)';
-            $.getJSON(observationsUrl, function (datastream) {
-
-                let obs = datastream.Observations.map(function (observation) {
-                    let timestamp = moment(observation.phenomenonTime).valueOf();
-                    return [timestamp, parseFloat(observation.result)];
-                });
-
-                if (event.originalEvent.shiftKey) {
-                    // add to
-                } else {
-                    // Single replaces
-                }
-
-                // Add observations to the chart
-                chart.addSeries({
-                    id: thing.name,
-                    name: "Snuffel " + thing.name + '(' + thing.location.name + ')' + ", " + datastream.name,
-                    data: obs
-                });
-
-                chart.renderer.button('Clear chart', 300, 5)
-                    .attr({
-                        zIndex: 3
-                    })
-                    .on('click', function () {
-                        for (let i = chart.series.length - 1; i >= 0; i--) {
-                            chart.series[i].remove(false);
-                        }
-                        chart.redraw();
-                    })
-                    .add();
-
-            });
-
-
-        }
+    $('.btn-close').on('click', function (e) {
+        e.stopPropagation();
+        var $target = $(this).parents('.col-sm-3');
+        $target.hide('fast', function () {
+            $target.remove();
+        });
     });
 
-
-    // let configButton = document.getElementById('config');
-    // configButton.onclick = function () {
-    //
-    //
-    // }
-
-    let locationButton = document.getElementById('location');
-    locationButton.onclick = function () {
-        let address = prompt("Enter new address or location name for the device:", "");
-        if (address && address !== '') {
-
-            // TODO geocode from address to lat,lng
-            var lat = 51
-            var lng = 4
-
-            var newLocation = {}
-            newLocation.name = address
-            newLocation.description = address
-            newLocation.encodingType = 'application/vnd.geo+json'
-            newLocation.location = {}
-            newLocation.location.type = 'point'
-            newLocation.location.coordinates = [lat, lng]
-
-            let deviceName = this.parentElement.id;
-
-            $.post(stapiBaseUrl + '/Things(' + deviceName + ')/Locations', newLocation)
-                .done(function (data) {
-                    console.log(data); // TODO: get device name from parent card
-                    // TODO: refresh map
-                    // indivisual marker should be relocatable (for admin)
-                });
-        }
-    }
-
-    let deleteButton = document.getElementById('delete');
-    deleteButton.onclick = function () {
-        let inDeviceName = prompt("Enter the device name to confirm deletion:", "");
-        if (inDeviceName) {
-
-            let deviceName = this.parentElement.id;
-            if (inDeviceName === deviceName) {
-                // $.ajax({
-                //     url: stapiBaseUrl + '/Things(' + deviceName + ')',
-                //     type: 'DELETE',
-                //     success: function (result) {
-                //         console.log('delete device success');
-                //     }
-                // });
-            } else
-                alert('device name did not match, delete aborted');
-        }
-    }
 }
 
