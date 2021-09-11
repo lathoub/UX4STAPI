@@ -137,6 +137,7 @@ function markerOnClick(event) {
                 // ROBIN: dit is de pagination, kijk naar beide logs
                 console.log(datastream['@iot.count'])
                 console.log(datastream['@iot.nextLink'])
+                // TODO: volgende query async runnen
 
                 let obs = datastream.value.map(function (observation) {
                     let timestamp = moment(observation.phenomenonTime).valueOf();
