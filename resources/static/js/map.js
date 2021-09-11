@@ -13,35 +13,40 @@ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
 }).addTo(map);
 
 // Get Location and Datastreams of all Things
-$.getJSON(stapiBaseUrl + "/Things?$expand=Locations,Datastreams($orderby=name asc)", function (things) {
+fetch(stapiBaseUrl + "/Things?$expand=Locations,Datastreams($orderby=name asc)")
+    .then(response => response.json())
+    .then(body => {
+        // Layergroups allows for multiple Things to be at the same location
+        // and still be able to select them indivisually
+        let markersClusterGroup = L.markerClusterGroup().addTo(map);
+        markersClusterGroup.on("click", markerOnClick);
 
-    // Layergroups allows for multiple Things to be at the same location
-    // and still be able to select them indivisually
-    let markersClusterGroup = L.markerClusterGroup().addTo(map);
-    markersClusterGroup.on("click", markerOnClick);
+        // Convert the Locations into GeoJSON Features
+        let geoJsonFeatures = body.value.map(function (thing) {
+            return {
+                type: 'Feature',
+                id: thing['@iot.id'],
+                name: thing.name,
+                description: thing.description,
+                properties: thing.properties,
+                location: thing.Locations[0],   // cache location info
+                datastreams: thing.Datastreams, // cache Datastreams
+                geometry: thing.Locations[0].location,
+            };
+        });
 
+        // Convert to geoJSON features (and add title (for tooltip) and icon)
+        var geoJsonLayerGroup = L.geoJSON(geoJsonFeatures, {
+            pointToLayer: function (feature, latlng) {
+                return L.marker(latlng, {
+                    title: feature.description + ' ' + feature.name,
+                });
+            }
+        }).addTo(markersClusterGroup);
 
-
-    // Convert the Locations into GeoJSON Features
-    let geoJsonFeatures = things.value.map(function (thing) {
-        return {
-            type: 'Feature',
-            id: thing['@iot.id'],
-            name: thing.name,
-            description: thing.description,
-            location: thing.Locations[0],   // cache location info
-            datastreams: thing.Datastreams, // cache Datastreams
-            geometry: thing.Locations[0].location,
-        };
-    });
-
-    // Add geojson to LayerGroup
-    let geoJsonLayerGroup = L.geoJSON(geoJsonFeatures);
-    geoJsonLayerGroup.addTo(markersClusterGroup);
-
-    // Zoom in the map so that it fits the Things
-    map.fitBounds(geoJsonLayerGroup.getBounds());
-});
+        // Zoom in the map so that it fits the Things
+        map.fitBounds(geoJsonLayerGroup.getBounds());
+    })
 
 // Create empty chart. Observation will be added
 // to the chart when the user click on the Market and Datastream
@@ -114,7 +119,6 @@ function markerOnClick(event) {
         return false;
     }
 
-
     //Open chart of selected datastream
     additionalthing.addEventListener("click", function (e) {
         if (e.target && e.target.nodeName === "LI") {
@@ -147,7 +151,7 @@ function markerOnClick(event) {
                 // Add observations to the chart
                 chart.addSeries({
                     id: thing.name,
-                    name: "Snuffel " + thing.name + '(' + thing.location.name + ')' + ", " + datastream.name,
+                    name: thing.name + '(' + thing.location.name + ')' + ", " + datastream.name,
                     data: data
                 });
             });
