@@ -135,26 +135,26 @@ function markerOnClick(event) {
 
             let observationsUrl = stapiBaseUrl + '/Things(' + thing.id + ')/Datastreams(' + datastream['@iot.id'] + ')'
                 + "/Observations?$orderby=phenomenonTime asc&$count=true"
+            fetch(observationsUrl)
+                .then(response => response.json())
+                .then(observations => {
+                    // ROBIN: dit is de pagination, kijk naar beide logs
+                    console.log(observations['@iot.count'])
+                    console.log(observations['@iot.nextLink'])
+                    // TODO: volgende query async runnen
 
-            $.getJSON(observationsUrl, function (observations) {
+                    let data = observations.value.map(function (observation) {
+                        let timestamp = moment(observation.phenomenonTime).valueOf();
+                        return [timestamp, parseFloat(observation.result)];
+                    });
 
-                // ROBIN: dit is de pagination, kijk naar beide logs
-                console.log(observations['@iot.count'])
-                console.log(observations['@iot.nextLink'])
-                // TODO: volgende query async runnen
-
-                let data = observations.value.map(function (observation) {
-                    let timestamp = moment(observation.phenomenonTime).valueOf();
-                    return [timestamp, parseFloat(observation.result)];
-                });
-
-                // Add observations to the chart
-                chart.addSeries({
-                    id: thing.name,
-                    name: thing.name + '(' + thing.location.name + ')' + ", " + datastream.name,
-                    data: data
-                });
-            });
+                    // Add observations to the chart
+                    chart.addSeries({
+                        id: thing.name,
+                        name: thing.name + '(' + thing.location.name + ')' + ", " + datastream.name,
+                        data: data
+                    });
+                })
         }
     });
 
