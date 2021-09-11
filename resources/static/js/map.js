@@ -115,15 +115,12 @@ function markerOnClick(event) {
     document.getElementById("close" + thing.name).onclick = function (rrr) {
         this.parentNode.parentNode.parentNode
             .removeChild(this.parentNode.parentNode);
-
         // remove all datastreams from the series
         thing.datastreams.forEach(datastream => {
             selectedSeries = selectedSeries.filter(id => id !== datastream["@iot.id"]);
         })
-
         // remove thing from selected Markers
         selectedMarkers = selectedMarkers.filter(id => id !== thing.name);
-
         chart.get(thing.name).remove(selectedSeries);
         return false;
     }
@@ -141,22 +138,6 @@ function markerOnClick(event) {
             if (selectedSeries.includes(datastream["@iot.id"]))
                 return null;
             selectedSeries.push(datastream["@iot.id"]);
-
-            // Async Await Recursive Function 
-            const reqsAsyncWait = async (url) => {
-                if (url) {
-                    return await fetch(url)
-                        .then(async response => {
-                            const json = response.json();
-                            if (response.ok) {
-                                const jsonData = await json;
-                                return await reqsAsyncWait("");
-                            }
-                            // not this object may be empty if no err msg 
-                            throw await json;
-                        });
-                }
-            };
 
             // get the observation from the past 5 days
             var startDateTime = moment(Date.now()).subtract(3, 'd')
