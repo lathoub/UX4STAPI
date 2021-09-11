@@ -132,14 +132,14 @@ function markerOnClick(event) {
             let observationsUrl = stapiBaseUrl + '/Things(' + thing.id + ')/Datastreams(' + datastream['@iot.id'] + ')'
                 + "/Observations?$orderby=phenomenonTime asc&$count=true"
 
-            $.getJSON(observationsUrl, function (datastream) {
+            $.getJSON(observationsUrl, function (observations) {
 
                 // ROBIN: dit is de pagination, kijk naar beide logs
-                console.log(datastream['@iot.count'])
-                console.log(datastream['@iot.nextLink'])
+                console.log(observations['@iot.count'])
+                console.log(observations['@iot.nextLink'])
                 // TODO: volgende query async runnen
 
-                let obs = datastream.value.map(function (observation) {
+                let data = observations.value.map(function (observation) {
                     let timestamp = moment(observation.phenomenonTime).valueOf();
                     return [timestamp, parseFloat(observation.result)];
                 });
@@ -148,7 +148,7 @@ function markerOnClick(event) {
                 chart.addSeries({
                     id: thing.name,
                     name: "Snuffel " + thing.name + '(' + thing.location.name + ')' + ", " + datastream.name,
-                    data: obs
+                    data: data
                 });
             });
         }
