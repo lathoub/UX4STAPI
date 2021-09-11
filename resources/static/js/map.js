@@ -133,8 +133,25 @@ function markerOnClick(event) {
                 return null;
             selectedSeries.push(datastream.name);
 
+            // Async Await Recursive Function 
+            const reqsAsyncWait = async (url) => {
+                if (url) {
+                    return await fetch(url)
+                        .then(async response => {
+                            const json = response.json();
+                            if (response.ok) {
+                                const jsonData = await json;
+                                return await reqsAsyncWait("");
+                            }
+                            // not this object may be empty if no err msg 
+                            throw await json;
+                        });
+                }
+            };
+
+            // request the more optimal dataArray for the results
             let observationsUrl = stapiBaseUrl + '/Things(' + thing.id + ')/Datastreams(' + datastream['@iot.id'] + ')'
-                + "/Observations?$orderby=phenomenonTime asc&$count=true"
+                + "/Observations?$orderby=phenomenonTime asc&$count=true&$resultFormat=dataArray"
             fetch(observationsUrl)
                 .then(response => response.json())
                 .then(observations => {
@@ -143,9 +160,14 @@ function markerOnClick(event) {
                     console.log(observations['@iot.nextLink'])
                     // TODO: volgende query async runnen
 
-                    let data = observations.value.map(function (observation) {
-                        let timestamp = moment(observation.phenomenonTime).valueOf();
-                        return [timestamp, parseFloat(observation.result)];
+                    const components = observations.value[0].components
+                    const dataArray = observations.value[0].dataArray
+                    const it = components.indexOf("phenomenonTime")
+                    const ir = components.indexOf("result")
+
+                    const data = dataArray.map(function (observation) {
+                        let timestamp = moment(observation[it]).valueOf();
+                        return [timestamp, parseFloat(observation[ir])];
                     });
 
                     // Add observations to the chart
@@ -155,6 +177,8 @@ function markerOnClick(event) {
                         data: data
                     });
                 })
+
+            // await reqsAsyncWait(observationsUrl)
         }
     });
 
