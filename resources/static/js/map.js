@@ -24,6 +24,7 @@ fetch(stapiBaseUrl + "/Things?$expand=Locations,Datastreams($orderby=name asc)")
                 id: thing['@iot.id'],
                 name: thing.name,
                 description: thing.description,
+                properties: thing.properties,
                 location: thing.Locations[0],   // cache location info
                 datastreams: thing.Datastreams, // cache Datastreams
                 geometry: thing.Locations[0].location,
@@ -33,11 +34,12 @@ fetch(stapiBaseUrl + "/Things?$expand=Locations,Datastreams($orderby=name asc)")
         var geoJsonLayerGroup = L.geoJSON(geoJsonFeatures, {
             pointToLayer: function (feature, latlng) {
                 return L.marker(latlng, {
-                    title: feature.name
+                    title: feature.description +' ' + feature.name,
+                    icon: (feature.properties.version == 6) ? goldIcon : (feature.properties.version == 7) ? greenIcon : blueIcon
                 });
             }
         }).addTo(markersClusterGroup);
-        
+
         // Zoom in the map so that it fits the Things
         map.fitBounds(geoJsonLayerGroup.getBounds());
     })
