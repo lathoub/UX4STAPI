@@ -31,10 +31,11 @@ fetch(stapiBaseUrl + "/Things?$expand=Locations,Datastreams($orderby=name asc)")
             };
         });
 
+        // Convert to geoJSON features (and add title (for tooltip) and icon)
         var geoJsonLayerGroup = L.geoJSON(geoJsonFeatures, {
             pointToLayer: function (feature, latlng) {
                 return L.marker(latlng, {
-                    title: feature.description +' ' + feature.name,
+                    title: feature.description + ' ' + feature.name,
                     icon: (feature.properties.version == 6) ? goldIcon : (feature.properties.version == 7) ? greenIcon : blueIcon
                 });
             }
@@ -61,7 +62,7 @@ function markerOnClick(event) {
 
     var chunck = ''
     thing.datastreams.forEach(function (datastream) {
-        chunck += '<label class="list-group-item"><input class="form-check-input me-1" type="checkbox" value="">' + datastream.name + '<span class="badge bg-primary rounded-pill">14 minutes ago</span></label>'
+        chunck += '<label class="list-group-item"><input class="form-check-input me-1" type="checkbox" value="">' + datastream.name + '<span class="badge bg-primary rounded-pill float-end">14 minutes ago</span></label>'
     });
 
     var myCard = $('<div class="card card-outline-info" id="bbb">'
@@ -71,9 +72,9 @@ function markerOnClick(event) {
         + '</h5>'
         + '<h5 class="card-title">' + thing.location.name + ", " + thing.location.description + '</h5>'
         + '<h6 class="card-title">DataStreams:</h6>'
-        //    + '<div class="row">'
+        + '<div class="list-group">'
         + chunck
-        //    + '</div>'
+        + '</div>'
         + '</div>');
     myCard.appendTo('#contentPanel');
 
