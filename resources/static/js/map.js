@@ -62,6 +62,19 @@ let chart = new Highcharts.stockChart("chart", {
     series: []
 });
 
+// ROBIN: stond eerst beneden, kan hier staan!
+chart.renderer.button('Clear chart', 300, 5)
+    .attr({
+        zIndex: 3
+    })
+    .on('click', function () {
+        for (let i = chart.series.length - 1; i >= 0; i--) {
+            chart.series[i].remove(false);
+        }
+        chart.redraw();
+        selectedSeries = []; // was je vergeten ;-)
+    })
+    .add();
 
 // event handler that picks up on Marker clicks
 function markerOnClick(event) {
@@ -106,32 +119,29 @@ function markerOnClick(event) {
     additionalthing.addEventListener("click", function (e) {
         if (e.target && e.target.nodeName === "LI") {
 
-            console.log(thing.id)
-
             let datastream = thing.datastreams.find(ds => ds.name == e.target.innerText);
             if (datastream == undefined) {
             } // TODO: error handling
 
-            let observationsUrl = stapiBaseUrl + '/Things(' + thing.id + ')/Datastreams(' + datastream['@iot.id'] + ')?$expand=Observations($orderby=resultTime asc)';
+            // ROBIN: ik heb dit naar boven gebracht, stond in event handler als data binnen kwam.
+            // dit kan je reeds vroeger, en wordt nu niet telkens uitgevoerd wanneer data binnenkomt
+            if (selectedSeries.includes(datastream.name))
+                return null;
+            selectedSeries.push(datastream.name);
+
+            let observationsUrl = stapiBaseUrl + '/Things(' + thing.id + ')/Datastreams(' + datastream['@iot.id'] + ')'
+                + "/Observations?$orderby=phenomenonTime asc&$count=true"
+
             $.getJSON(observationsUrl, function (datastream) {
 
-                let obs = datastream.Observations.map(function (observation) {
+                // ROBIN: dit is de pagination, kijk naar beide logs
+                console.log(datastream['@iot.count'])
+                console.log(datastream['@iot.nextLink'])
+
+                let obs = datastream.value.map(function (observation) {
                     let timestamp = moment(observation.phenomenonTime).valueOf();
                     return [timestamp, parseFloat(observation.result)];
                 });
-
-                if (event.originalEvent.shiftKey) {
-                    // add to
-                } else {
-                    // Single replaces
-                }
-                if (selectedSeries.includes(datastream.name)){
-                    return null ;
-                }
-                else {
-                    selectedSeries.push(datastream.name);
-                }
-                console.log(selectedSeries);
 
                 // Add observations to the chart
                 chart.addSeries({
@@ -139,19 +149,6 @@ function markerOnClick(event) {
                     name: "Snuffel " + thing.name + '(' + thing.location.name + ')' + ", " + datastream.name,
                     data: obs
                 });
-
-
-                chart.renderer.button('Clear chart', 300, 5)
-                    .attr({
-                        zIndex: 3
-                    })
-                    .on('click', function () {
-                        for (let i = chart.series.length - 1; i >= 0; i--) {
-                            chart.series[i].remove(false);
-                        }
-                        chart.redraw();
-                    })
-                    .add();
             });
         }
     });
