@@ -60,9 +60,19 @@ setInterval(function () {
     var thingsName = getSelectedThings()
     for (const thingName of thingsName) {
         var thingCard = getThingCard(thingName)
+
+        var listGroup = thingCard.childNodes[2]
+        for (const datastreamItem of listGroup.childNodes) {
+            if (!datastreamItem.className.includes('disabled')) {
+                console.log("sss")
+                // TODO: get the last observations
+                // add to chart
+                // add last obs to this
+            }
+        }
     }
 
-}, 60 * 1000);
+}, 5 * 1000);
 
 // event handler that picks up on Marker clicks
 function markerOnClick(event) {
