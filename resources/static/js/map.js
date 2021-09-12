@@ -65,6 +65,23 @@ function markerOnClick(event) {
         datastreams += '<label class="list-group-item"><input class="form-check-input me-1" type="checkbox" value="">' + datastream.name + '<span class="badge bg-primary rounded-pill float-end">14 minutes ago</span></label>'
     });
 
+    thing.datastreams.forEach(function (datastream) {
+        var obsUrl = datastream["@iot.selfLink"]
+        obsUrl += "/Observations"
+        obsUrl += "?$orderby=resultTime desc"
+        obsUrl += "&$top=1"
+        fetch(obsUrl) // get last observation
+            .then(response => response.json())
+            .then(body => {
+                if (body.value.length > 0) {
+                    console.log(datastream.name)
+                    var toen = moment(body.value[0].phenomenonTime)
+                    var duration = toen.fromNow()
+                    console.log(duration) // TODO: update UI
+                }
+            });
+    });
+
     var myCard = $('<div class="card card-outline-info" id="bbb">'
         + '<h5 class="card-header">'
         + '<span>' + thing.description + ", " + thing.name + '</span>'
