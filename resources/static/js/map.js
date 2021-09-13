@@ -108,7 +108,7 @@ setInterval(function () {
                 })
         })
     }
-}, 15 * 1000);
+}, 60 * 1000);
 
 // event handler that picks up on Marker clicks
 function markerOnClick(event) {
