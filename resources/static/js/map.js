@@ -1,19 +1,14 @@
 // Leaflet map initial view
 let map = L.map('map').setView([0, 0], 12);
 
-//Empty array for selected markers
-let selectedMarkers = [];
-let selectedSeries = [];
-
-//Base server URL
+// Base server URL
 let stapiBaseUrl = 'https://stapi.snuffeldb.synology.me/FROST-Server/v1.0'
 
-//Leaflet map
+// Leaflet map
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
 }).addTo(map);
 
-// Get Location and Datastreams of all Things
 fetch(stapiBaseUrl + "/Things?$expand=Locations,Datastreams($orderby=name asc)")
     .then(response => response.json())
     .then(body => {
@@ -28,7 +23,6 @@ fetch(stapiBaseUrl + "/Things?$expand=Locations,Datastreams($orderby=name asc)")
                 type: 'Feature',
                 id: thing['@iot.id'],
                 name: thing.name,
-                description: thing.description,
                 properties: thing.properties,
                 location: thing.Locations[0],   // cache location info
                 datastreams: thing.Datastreams, // cache Datastreams
@@ -40,7 +34,8 @@ fetch(stapiBaseUrl + "/Things?$expand=Locations,Datastreams($orderby=name asc)")
         var geoJsonLayerGroup = L.geoJSON(geoJsonFeatures, {
             pointToLayer: function (feature, latlng) {
                 return L.marker(latlng, {
-                    title: feature.description + ' ' + feature.name,
+                    title: feature.name,
+                    icon: (feature.properties.version == 6) ? goldIcon : (feature.properties.version == 7) ? greenIcon : blueIcon
                 });
             }
         }).addTo(markersClusterGroup);
@@ -52,95 +47,154 @@ fetch(stapiBaseUrl + "/Things?$expand=Locations,Datastreams($orderby=name asc)")
 // Create empty chart. Observation will be added
 // to the chart when the user click on the Market and Datastream
 
-let chart = new Highcharts.stockChart("chart", {
+let chart = new Highcharts.Chart("chart", {
     title: { text: "" },
     legend: { enabled: true },
     yAxis: { title: "" },
     xAxis: { type: "datetime" },
-    rangeSelector: {
-        floating: true,
-        y: -65,
-        verticalAlign: 'bottom'
-    },
-    navigator: {
-        margin: 60
-    },
     series: []
 });
 
-// ROBIN: stond eerst beneden, kan hier staan!
-chart.renderer.button('Clear chart', 300, 5)
-    .attr({
-        zIndex: 3
-    })
-    .on('click', function () {
-        for (let i = chart.series.length - 1; i >= 0; i--) {
-            chart.series[i].remove(false);
-        }
-        chart.redraw();
-        selectedSeries = []; // ROBIN was je vergeten ;-)
-    })
-    .add();
+// update the charts every minute
+setInterval(function () {
+
+    for (var thingName in dictSelected) {
+        var thing = getThing(thingName)
+
+        dictSelected[thingName].datastreams.forEach(function (datastreamId) {
+
+            var data = chart.get(datastreamId)
+            if (!data) return
+
+            var lastDateTime = moment(data.xData[data.xData.length - 1])
+
+            // request the more optimal dataArray for the results
+            let observationsUrl = stapiBaseUrl + '/Things(' + thing.id + ')/Datastreams(' + datastreamId + ')'
+                + "/Observations"
+                + "?$count=true"
+                + "&$top=1000"
+                + "&$resultFormat=dataArray"
+                + "&$filter=resultTime%20gt%20" + lastDateTime.toISOString()
+                + "&$orderby=resultTime asc"
+            fetch(observationsUrl)
+                .then(response => response.json())
+                .then(observations => {
+                    // ROBIN: dit is de pagination, kijk naar beide logs
+                    //console.log(observations['@iot.count'])
+                    //console.log(observations['@iot.nextLink'])
+                    // TODO: volgende query async runnen
+
+                    var datastream = getDatastreamFromId(thing, datastreamId)
+                    var datastreamItem = getDatastreamItem(thingName, datastream.name)
+
+                    if (observations["@iot.count"] > 0) {
+                        const components = observations.value[0].components
+                        const dataArray = observations.value[0].dataArray
+                        const it = components.indexOf("resultTime")
+                        const ir = components.indexOf("result")
+
+                        const data = dataArray.map(function (observation) {
+                            let timestamp = moment(observation[it]).valueOf();
+                            return [timestamp, parseFloat(observation[ir])];
+                        });
+
+                        for (var i = 0; i < data.length; i++)
+                            chart.get(datastreamId).addPoint(data[i], true, true);
+
+                        // update last update
+                        lastDateTime = moment(data[data.length - 1][0])
+                    }
+                    datastreamItem.childNodes[2].textContent = lastDateTime.fromNow()
+                })
+        })
+    }
+}, 15 * 1000);
 
 // event handler that picks up on Marker clicks
 function markerOnClick(event) {
     let thing = event.layer.feature;
-    let html = '';
 
-    //Fill up div with thing information
-    html += '<h1>' + thing.name + '</h1>';
-    html += '<h2>' + thing.location.name + '</h2>';
-    html += '<h3>' + 'Datastreams:' + '</h3>';
+    if (dictSelected[thing.name]) return;
+    dictSelected[thing.name] = { "thing": thing, "datastreams": [] }
+
+    var datastreamsHtml = ''
     thing.datastreams.forEach(function (datastream) {
-        html += '<li>' + datastream.name + '</li>'
+        datastreamsHtml += '<label class="list-group-item">'
+            + '<input class="form-check-input me-1" type="checkbox" value="">' + datastream.name + '<span class="badge bg-primary rounded-pill float-end"></span></label>'
+
+        var obsUrl = datastream["@iot.selfLink"]
+        obsUrl += "/Observations"
+        obsUrl += "?$orderby=resultTime desc"
+        obsUrl += "&$top=1"
+        fetch(obsUrl) // get last observation
+            .then(response => response.json())
+            .then(body => {
+                var datastreamItem = getDatastreamItem(thing.name, datastream.name)
+                if (body.value.length > 0) {
+                    var toen = moment(body.value[0].phenomenonTime)
+                    datastreamItem.className = "list-group-item"
+                    datastreamItem.childNodes[2].textContent = toen.fromNow()
+                    datastreamItem.childNodes[2].className = "badge bg-primary rounded-pill float-end"
+                } else {
+                    datastreamItem.className = "list-group-item disabled"
+                    datastreamItem.childNodes[2].textContent = "no data"
+                    datastreamItem.childNodes[2].className = "badge bg-warning rounded-pill float-end"
+                }
+            });
     });
 
-    html = '<ul id="datastreamlist">' + '<span id="close' + thing.name + '">x</span>' + html + '</ul>'
-        + '<button type="button" class="btn btn-primary" id="config' + '">Configure</button>'
-        + '<button type="button" class="btn btn-primary" id="location' + '">Location</button>'
-        + '<button type="button" class="btn btn-danger" id="delete' + '">Delete</button>'
+    var myCard = $('<div class="card card-outline-info" id="bbb">'
+        + '<h5 class="card-header">'
+        + '<span>' + thing.name + '</span>'
+        + '<button type="button" class="btn-close float-end" aria-label="Close"></button>'
+        + '</h5>'
+        + '<h6 class="card-title">' + thing.location.name + ", " + thing.location.description + '</h6>'
+        + '<div class="list-group">'
+        + datastreamsHtml
+        + '</div>'
+        + '</div>');
+    myCard.appendTo('#contentPanel');
 
-    //Add things to list on marker click if unique
-    if (selectedMarkers.includes(thing.name))
-        return
-    let thingy = document.getElementById("thingy");
-    let additionalthing = document.createElement("div");
-    additionalthing.setAttribute("id", thing.name);
-    additionalthing.innerHTML = html;
-    thingy.appendChild(additionalthing);
+    $('.btn-close').on('click', function (e) {
+        e.stopPropagation();
 
-    selectedMarkers.push(thing.name);
+        const thingName = this.parentNode.childNodes[0].textContent
+        const thing = getThing(thingName)
+        if (!thing) return // hmm, should already be selected 
 
-    // Close opened things
-    document.getElementById("close" + thing.name).onclick = function (rrr) {
-        this.parentNode.parentNode.parentNode
-            .removeChild(this.parentNode.parentNode);
-        // remove all datastreams from the series
-        thing.datastreams.forEach(datastream => {
-            selectedSeries = selectedSeries.filter(id => id !== datastream["@iot.id"]);
-        })
-        // remove thing from selected Markers
-        selectedMarkers = selectedMarkers.filter(id => id !== thing.name);
-        chart.get(thing.name).remove(selectedSeries);
-        return false;
-    }
+        // remove from chart
+        for (const datastreamId of dictSelected[thing.name].datastreams)
+            chart.get(datastreamId).remove();
 
-    //Open chart of selected datastream
-    additionalthing.addEventListener("click", function (e) {
-        if (e.target && e.target.nodeName === "LI") {
+        // remove thing from selected things
+        delete dictSelected[thing.name]
 
-            let datastream = thing.datastreams.find(ds => ds.name == e.target.innerText);
-            if (datastream == undefined) {
-            } // TODO: error handling
+        var $target = $(this).parents('.card');
+        $target.hide('fast', function () {
+            $target.remove();
+        });
 
-            // ROBIN: ik heb dit naar boven gebracht, stond in event handler als data binnen kwam.
-            // dit kan je reeds vroeger, en wordt nu niet telkens uitgevoerd wanneer data binnenkomt
-            if (selectedSeries.includes(datastream["@iot.id"]))
-                return null;
-            selectedSeries.push(datastream["@iot.id"]);
+    });
 
-            // get the observation from the past 5 days
-            var startDateTime = moment(Date.now()).subtract(3, 'd')
+    $('.form-check-input').change(function (e) {
+        // from UI
+        const datastreamName = this.parentNode.childNodes[1].data
+        const thingName = this.parentNode.parentNode.parentNode.childNodes[0].textContent
+
+        const thing = getThing(thingName)
+        if (!thing) return // hmm, should already be selected 
+
+        // get datastream from datastream name
+        const datastream = getDatastream(thing, datastreamName)
+        if (!datastream) return // hmm, should already be selected 
+
+        if ($(this).prop('checked')) {
+
+            dictSelected[thing.name].datastreams.push(datastream["@iot.id"])
+
+            // get the observation from the past 3 days
+            // (3 days of observation is under 1000 observations)
+            const startDateTime = moment(Date.now()).subtract(1, 'd')
 
             // request the more optimal dataArray for the results
             let observationsUrl = stapiBaseUrl + '/Things(' + thing.id + ')/Datastreams(' + datastream['@iot.id'] + ')'
@@ -170,68 +224,21 @@ function markerOnClick(event) {
 
                     // Add observations to the chart
                     chart.addSeries({
-                        id: thing.name,
+                        id: datastream["@iot.id"],
                         name: thing.name + '(' + thing.location.name + ')' + ", " + datastream.name,
                         data: data
                     });
                 })
+
+        } else {
+            // remove datastream id
+            dictSelected[thing.name].datastreams = dictSelected[thing.name].datastreams.filter(function (value, index, arr) {
+                return value != datastream["@iot.id"];
+            });
+            chart.get(datastream["@iot.id"]).remove();
         }
-    });
+    })
 
+    return;
 
-    // let configButton = document.getElementById('config');
-    // configButton.onclick = function () {
-    //
-    //
-    // }
-
-    //Location button to change the location for the Thing
-    let locationButton = document.getElementById('location');
-    locationButton.onclick = function () {
-        let address = prompt("Enter new address or location name for the device:", "");
-        if (address && address !== '') {
-
-            // TODO geocode from address to lat,lng
-            var lat = 51
-            var lng = 4
-
-            var newLocation = {}
-            newLocation.name = address
-            newLocation.description = address
-            newLocation.encodingType = 'application/vnd.geo+json'
-            newLocation.location = {}
-            newLocation.location.type = 'point'
-            newLocation.location.coordinates = [lat, lng]
-
-            let deviceName = this.parentElement.id;
-
-            $.post(stapiBaseUrl + '/Things(' + deviceName + ')/Locations', newLocation)
-                .done(function (data) {
-                    console.log(data); // TODO: get device name from parent card
-                    // TODO: refresh map
-                    // indivisual marker should be relocatable (for admin)
-                });
-        }
-    }
-
-    //Delete button to delete Thing from server
-    let deleteButton = document.getElementById('delete');
-    deleteButton.onclick = function () {
-        let inDeviceName = prompt("Enter the device name to confirm deletion:", "");
-        if (inDeviceName) {
-
-            let deviceName = this.parentElement.id;
-            if (inDeviceName === deviceName) {
-                // $.ajax({
-                //     url: stapiBaseUrl + '/Things(' + deviceName + ')',
-                //     type: 'DELETE',
-                //     success: function (result) {
-                //         console.log('delete device success');
-                //     }
-                // });
-            } else
-                alert('device name did not match, delete aborted');
-        }
-    }
 }
-
