@@ -158,11 +158,6 @@ function markerOnClick(event) {
     $('.btn-close').on('click', function (e) {
         e.stopPropagation();
 
-        var $target = $(this).parents('.card');
-        $target.hide('fast', function () {
-            $target.remove();
-        });
-
         const thingName = this.parentNode.childNodes[0].textContent
         const thing = getThing(thingName)
         if (!thing) return // hmm, should already be selected 
@@ -173,6 +168,12 @@ function markerOnClick(event) {
 
         // remove thing from selected things
         delete dictSelected[thing.name]
+
+        var $target = $(this).parents('.card');
+        $target.hide('fast', function () {
+            $target.remove();
+        });
+
     });
 
     $('.form-check-input').change(function (e) {
