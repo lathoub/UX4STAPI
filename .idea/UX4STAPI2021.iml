@@ -21,5 +21,6 @@
     <orderEntry type="library" name="data" level="application" />
     <orderEntry type="library" name="leaflet.markercluster" level="application" />
     <orderEntry type="library" name="stock-tools" level="application" />
+    <orderEntry type="library" name="all" level="application" />
   </component>
 </module>
