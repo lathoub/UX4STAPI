@@ -163,8 +163,8 @@ function markerOnClick(event) {
         if (!thing) return // hmm, should already be selected 
 
         // remove from chart
-        for (const datastream of dictSelected[thing.name].datastreams)
-            chart.get(datastream["@iot.id"]).remove();
+        for (const datastreamId of dictSelected[thing.name].datastreams)
+            chart.get(datastreamId).remove();
 
         // remove thing from selected things
         delete dictSelected[thing.name]
