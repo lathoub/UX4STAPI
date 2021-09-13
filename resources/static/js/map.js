@@ -126,6 +126,9 @@ function markerOnClick(event) {
         obsUrl += "/Observations"
         obsUrl += "?$orderby=resultTime desc"
         obsUrl += "&$top=1"
+
+        obsUrl = obsUrl.replace("http://", "https://")
+
         fetch(obsUrl) // get last observation
             .then(response => response.json())
             .then(body => {
