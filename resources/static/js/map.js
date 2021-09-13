@@ -158,7 +158,7 @@ function markerOnClick(event) {
     $('.btn-close').on('click', function (e) {
         e.stopPropagation();
 
-        var $target = $(this).parents('.col-sm-3'); // TODO
+        var $target = $(this).parents('.card');
         $target.hide('fast', function () {
             $target.remove();
         });
