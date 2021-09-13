@@ -16,12 +16,12 @@ function getThingCard(thingName) {
     return null
 }
 
-function getDatastreamItem(thingName, datastream) {
+function getDatastreamItem(thingName, datastreamName) {
     var thingCard = getThingCard(thingName)
     if (thingCard) {
         var listGroup = thingCard.childNodes[2]
         for (const datastreamItem of listGroup.childNodes)
-            if (datastreamItem.childNodes[1].textContent == datastream.name)
+            if (datastreamItem.childNodes[1].textContent == datastreamName)
                 return datastreamItem
     }
     return null
@@ -35,6 +35,14 @@ function getThing(name) {
 function getDatastream(thing, name) {
     for (const datastream of thing.datastreams) {
         if (datastream.name == name)
+            return datastream
+    }
+    return null
+}
+
+function getDatastreamFromId(thing, id) {
+    for (const datastream of thing.datastreams) {
+        if (datastream["@iot.id"] == id)
             return datastream
     }
     return null

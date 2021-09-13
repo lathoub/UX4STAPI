@@ -58,24 +58,57 @@ let chart = new Highcharts.Chart("chart", {
 // update the charts every minute
 setInterval(function () {
 
-    return;
+    for (var thingName in dictSelected) {
+        var thing = getThing(thingName)
 
-    var thingsName = getSelectedThings()
-    for (const thingName of thingsName) {
-        var thingCard = getThingCard(thingName)
+        dictSelected[thingName].datastreams.forEach(function (datastreamId) {
 
-        var listGroup = thingCard.childNodes[2]
-        for (const datastreamItem of listGroup.childNodes) {
-            if (!datastreamItem.className.includes('disabled')) {
-                console.log("sss")
-                // TODO: get the last observations
-                // missing: thingId
-                // add to chart
-                // add last obs to this
-            }
-        }
+            var data = chart.get(datastreamId)
+            if (!data) return
+
+            var lastDateTime = moment(data.xData[data.xData.length - 1])
+
+            // request the more optimal dataArray for the results
+            let observationsUrl = stapiBaseUrl + '/Things(' + thing.id + ')/Datastreams(' + datastreamId + ')'
+                + "/Observations"
+                + "?$count=true"
+                + "&$top=1000"
+                + "&$resultFormat=dataArray"
+                + "&$filter=resultTime%20gt%20" + lastDateTime.toISOString()
+                + "&$orderby=resultTime asc"
+            fetch(observationsUrl)
+                .then(response => response.json())
+                .then(observations => {
+                    // ROBIN: dit is de pagination, kijk naar beide logs
+                    //console.log(observations['@iot.count'])
+                    //console.log(observations['@iot.nextLink'])
+                    // TODO: volgende query async runnen
+
+                    var datastream = getDatastreamFromId(thing, datastreamId)
+                    var datastreamItem = getDatastreamItem(thingName, datastream.name)
+
+                    if (observations["@iot.count"] > 0) {
+                        const components = observations.value[0].components
+                        const dataArray = observations.value[0].dataArray
+                        const it = components.indexOf("resultTime")
+                        const ir = components.indexOf("result")
+
+                        const data = dataArray.map(function (observation) {
+                            let timestamp = moment(observation[it]).valueOf();
+                            return [timestamp, parseFloat(observation[ir])];
+                        });
+
+                        for (var i = 0; i < data.length; i++)
+                            chart.get(datastreamId).addPoint(data[i], true, true);
+
+                        // update last update
+                        lastDateTime = moment(data[data.length - 1][0])
+                    }
+                    datastreamItem.childNodes[2].textContent = lastDateTime.fromNow()
+                })
+        })
     }
-}, 5 * 1000);
+}, 15 * 1000);
 
 // event handler that picks up on Marker clicks
 function markerOnClick(event) {
@@ -96,7 +129,7 @@ function markerOnClick(event) {
         fetch(obsUrl) // get last observation
             .then(response => response.json())
             .then(body => {
-                var datastreamItem = getDatastreamItem(thing.name, datastream)
+                var datastreamItem = getDatastreamItem(thing.name, datastream.name)
                 if (body.value.length > 0) {
                     var toen = moment(body.value[0].phenomenonTime)
                     datastreamItem.className = "list-group-item"
@@ -124,6 +157,7 @@ function markerOnClick(event) {
 
     $('.btn-close').on('click', function (e) {
         e.stopPropagation();
+
         var $target = $(this).parents('.col-sm-3'); // TODO
         $target.hide('fast', function () {
             $target.remove();
@@ -149,7 +183,7 @@ function markerOnClick(event) {
         const thing = getThing(thingName)
         if (!thing) return // hmm, should already be selected 
 
-        // get datastream id from datastream name
+        // get datastream from datastream name
         const datastream = getDatastream(thing, datastreamName)
         if (!datastream) return // hmm, should already be selected 
 

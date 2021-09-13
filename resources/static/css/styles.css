@@ -23,7 +23,7 @@ body{
 
 #browser {
     height: 50vh;
-    width: 34%;
+    width: 24%;
     float: left;
     margin-left: 5px;
     margin-bottom: 5px;
@@ -41,12 +41,12 @@ body{
 #map{
     z-index: 0;
     height: 50vh;
-    width: 65%;
+    width: 75%;
     float: right;
 }
 
 #chart{
-    width: 65%;
+    width: 75%;
     height: 50vh;
     float: right;
 }
