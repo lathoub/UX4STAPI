@@ -57,6 +57,9 @@ let chart = new Highcharts.Chart("chart", {
 
 // update the charts every minute
 setInterval(function () {
+
+    return;
+
     var thingsName = getSelectedThings()
     for (const thingName of thingsName) {
         var thingCard = getThingCard(thingName)
@@ -66,20 +69,20 @@ setInterval(function () {
             if (!datastreamItem.className.includes('disabled')) {
                 console.log("sss")
                 // TODO: get the last observations
+                // missing: thingId
                 // add to chart
                 // add last obs to this
             }
         }
     }
-
 }, 5 * 1000);
 
 // event handler that picks up on Marker clicks
 function markerOnClick(event) {
     let thing = event.layer.feature;
 
-    // If the card is already known, no need to create another
-    if (getThingCard(thing.name)) return;
+    if (dictSelected[thing.name]) return;
+    dictSelected[thing.name] = { "thing": thing, "datastreams": [] }
 
     var datastreamsHtml = ''
     thing.datastreams.forEach(function (datastream) {
@@ -125,51 +128,82 @@ function markerOnClick(event) {
         $target.hide('fast', function () {
             $target.remove();
         });
+
+        const thingName = this.parentNode.childNodes[0].textContent
+        const thing = getThing(thingName)
+        if (!thing) return // hmm, should already be selected 
+
+        // remove from chart
+        for (const datastream of dictSelected[thing.name].datastreams)
+            chart.get(datastream["@iot.id"]).remove();
+
+        // remove thing from selected things
+        delete dictSelected[thing.name]
     });
 
-    // get the observation from the past 3 days
-    // (3 days of observation is under 1000 observations)
-    var startDateTime = moment(Date.now()).subtract(1, 'd')
+    $('.form-check-input').change(function (e) {
+        // from UI
+        const datastreamName = this.parentNode.childNodes[1].data
+        const thingName = this.parentNode.parentNode.parentNode.childNodes[0].textContent
 
-    // take 2nd datastream (tmp)
-    var datastream = thing.datastreams[2]
+        const thing = getThing(thingName)
+        if (!thing) return // hmm, should already be selected 
 
-    var thingsName = getSelectedThings()
-    for (const thingName of thingsName) {
-        getThingCard(thingName)
-    }
+        // get datastream id from datastream name
+        const datastream = getDatastream(thing, datastreamName)
+        if (!datastream) return // hmm, should already be selected 
 
-    // request the more optimal dataArray for the results
-    let observationsUrl = stapiBaseUrl + '/Things(' + thing.id + ')/Datastreams(' + datastream['@iot.id'] + ')'
-        + "/Observations"
-        + "?$count=true"
-        + "&$top=1000"
-        + "&$resultFormat=dataArray"
-        + "&$filter=resultTime%20ge%20" + startDateTime.toISOString()
-        + "&$orderby=resultTime asc"
-    fetch(observationsUrl)
-        .then(response => response.json())
-        .then(observations => {
-            // ROBIN: dit is de pagination, kijk naar beide logs
-            console.log(observations['@iot.count'])
-            console.log(observations['@iot.nextLink'])
-            // TODO: volgende query async runnen
+        if ($(this).prop('checked')) {
 
-            const components = observations.value[0].components
-            const dataArray = observations.value[0].dataArray
-            const it = components.indexOf("resultTime")
-            const ir = components.indexOf("result")
+            dictSelected[thing.name].datastreams.push(datastream["@iot.id"])
 
-            const data = dataArray.map(function (observation) {
-                let timestamp = moment(observation[it]).valueOf();
-                return [timestamp, parseFloat(observation[ir])];
+            // get the observation from the past 3 days
+            // (3 days of observation is under 1000 observations)
+            const startDateTime = moment(Date.now()).subtract(1, 'd')
+
+            // request the more optimal dataArray for the results
+            let observationsUrl = stapiBaseUrl + '/Things(' + thing.id + ')/Datastreams(' + datastream['@iot.id'] + ')'
+                + "/Observations"
+                + "?$count=true"
+                + "&$top=1000"
+                + "&$resultFormat=dataArray"
+                + "&$filter=resultTime%20ge%20" + startDateTime.toISOString()
+                + "&$orderby=resultTime asc"
+            fetch(observationsUrl)
+                .then(response => response.json())
+                .then(observations => {
+                    // ROBIN: dit is de pagination, kijk naar beide logs
+                    console.log(observations['@iot.count'])
+                    console.log(observations['@iot.nextLink'])
+                    // TODO: volgende query async runnen
+
+                    const components = observations.value[0].components
+                    const dataArray = observations.value[0].dataArray
+                    const it = components.indexOf("resultTime")
+                    const ir = components.indexOf("result")
+
+                    const data = dataArray.map(function (observation) {
+                        let timestamp = moment(observation[it]).valueOf();
+                        return [timestamp, parseFloat(observation[ir])];
+                    });
+
+                    // Add observations to the chart
+                    chart.addSeries({
+                        id: datastream["@iot.id"],
+                        name: thing.name + '(' + thing.location.name + ')' + ", " + datastream.name,
+                        data: data
+                    });
+                })
+
+        } else {
+            // remove datastream id
+            dictSelected[thing.name].datastreams = dictSelected[thing.name].datastreams.filter(function (value, index, arr) {
+                return value != datastream["@iot.id"];
             });
+            chart.get(datastream["@iot.id"]).remove();
+        }
+    })
 
-            // Add observations to the chart
-            chart.addSeries({
-                id: thing.name,
-                name: thing.name + '(' + thing.location.name + ')' + ", " + datastream.name,
-                data: data
-            });
-        })
+    return;
+
 }

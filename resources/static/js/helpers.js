@@ -1,3 +1,5 @@
+var dictSelected = {}
+
 function getSelectedThings() {
     var thingsName = []
     var contentPanel = document.getElementById("contentPanel")
@@ -21,6 +23,19 @@ function getDatastreamItem(thingName, datastream) {
         for (const datastreamItem of listGroup.childNodes)
             if (datastreamItem.childNodes[1].textContent == datastream.name)
                 return datastreamItem
+    }
+    return null
+}
+
+function getThing(name) {
+    var thingProxy = dictSelected[name]
+    if (!thingProxy) return null
+    return thingProxy.thing
+}
+function getDatastream(thing, name) {
+    for (const datastream of thing.datastreams) {
+        if (datastream.name == name)
+            return datastream
     }
     return null
 }
