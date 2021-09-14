@@ -47,6 +47,13 @@ fetch(stapiBaseUrl + "/Things?$expand=Locations,Datastreams($orderby=name asc)")
 // Create empty chart. Observation will be added
 // to the chart when the user click on the Market and Datastream
 
+// Display time as local time
+Highcharts.setOptions({
+    time: {
+        useUTC: false
+    }
+});
+
 let chart = new Highcharts.Chart("chart", {
 
     title: {text: ""},
