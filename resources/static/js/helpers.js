@@ -7,11 +7,17 @@ dictScale["PM25"] = [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100]
 dictScale["RelativeHumidity"] = [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100]
 dictScale["SoundPressure"] = [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100]
 
-// var dictEndpoints
-serviceEndpoints = [{
-    name: "snuffeldb",
-    url: "https://stapi.snuffeldb.synology.me/FROST-Server/v1.0"
-}]
+// database of serice endpoints
+serviceEndpoints = [
+    {
+        name: "snuffeldb",
+            url: "https://stapi.snuffeldb.synology.me/FROST-Server/v1.0"
+    },
+        {
+        name: "snuffeldb",
+        url: "https://airquality-frost.k8s.ilt-dmz.iosb.fraunhofer.de/v1.1"
+    },
+]
 
 function getSelectedThings() {
     var thingsName = []

@@ -9,7 +9,12 @@ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
 // var dictEndpoints
 serviceEndpoints.forEach(function (endpoint) {
 
-    fetch(endpoint.url + "/Things?$expand=Locations,Datastreams($orderby=name asc)")
+    console.log(endpoint.url)
+    var url = endpoint.url + "/Things?$expand=Locations,Datastreams($orderby=name asc)"
+
+    console.log(url)
+
+    fetch(url)
         .then(response => response.json())
         .then(body => {
             // Layergroups allows for multiple Things to be at the same location
@@ -88,6 +93,7 @@ setInterval(function () {
                 + "&$resultFormat=dataArray"
                 + "&$filter=resultTime%20gt%20" + lastDateTime.toISOString()
                 + "&$orderby=resultTime asc"
+            console.log(observationsUrl)
             fetch(observationsUrl)
                 .then(response => response.json())
                 .then(observations => {
@@ -134,19 +140,20 @@ function markerOnClick(event) {
         datastreamsHtml += '<label class="list-group-item">'
             + '<input class="form-check-input me-1" type="checkbox" value="">' + datastream.name + '<span class="badge bg-primary rounded-pill float-end"></span></label>'
 
-        var obsUrl = datastream["@iot.selfLink"]
-        obsUrl += "/Observations"
-        obsUrl += "?$orderby=resultTime desc"
-        obsUrl += "&$top=1"
+        var observationsUrl = datastream["@iot.selfLink"]
+        observationsUrl += "/Observations"
+        observationsUrl += "?$orderby=resultTime desc"
+        observationsUrl += "&$top=1"
+        observationsUrl = observationsUrl.replace("http://", "https://")
+        console.log(observationsUrl)
 
-        obsUrl = obsUrl.replace("http://", "https://")
-
-        fetch(obsUrl) // get last observation
+        fetch(observationsUrl) // get last observation
             .then(response => response.json())
             .then(body => {
                 var datastreamItem = getDatastreamItem(thing.name, datastream.name)
                 if (body.value.length > 0) {
-                    var toen = moment(body.value[0].phenomenonTime)
+                    var phenomenonTimeInterval = body.value[0].phenomenonTime.split("/")
+                    var toen = moment(phenomenonTimeInterval[phenomenonTimeInterval.length-1])
                     datastreamItem.className = "list-group-item"
                     datastreamItem.childNodes[2].textContent = toen.fromNow()
                     datastreamItem.childNodes[2].className = "badge bg-primary rounded-pill float-end"
