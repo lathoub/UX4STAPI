@@ -1,9 +1,4 @@
 var dictSelected = {}
-
-var dictScale = {}
-dictScale["PM10"] = [0,100]
-dictScale["PM25"] = [0,100]
-
 var dictEndpoints
 dictEndpoints["snuffeldb"] = "https://stapi.snuffeldb.synology.me/FROST-Server/v1.0"
 
