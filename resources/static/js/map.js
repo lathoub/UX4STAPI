@@ -5,9 +5,8 @@ let map = L.map('map').setView([0, 0], 12);
 let stapiBaseUrl = 'https://stapi.snuffeldb.synology.me/FROST-Server/v1.0'
 
 // Leaflet map
-L.tileLayer('https://tiles.stadiamaps.com/tiles/alidade_smooth_dark/{z}/{x}/{y}{r}.png', {
-    maxZoom: 20,
-    attribution: '© <a href="https://stadiamaps.com/">Stadia Maps</a>, © <a href="https://openmaptiles.org/">OpenMapTiles</a> © <a href="http://openstreetmap.org">OpenStreetMap</a> contributors'
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
 }).addTo(map);
 
 fetch(stapiBaseUrl + "/Things?$expand=Locations,Datastreams($orderby=name asc)")
@@ -150,7 +149,7 @@ function markerOnClick(event) {
     var myCard = $('<div class="card card-outline-info" id="bbb">'
         + '<h5 class="card-header" class="card-header">'
         + '<span>' + thing.name + '</span>'
-        + '<button type="button" class="btn-close float-end" aria-label="Close"></button>'
+        + '<button type="button" class="btn-close btn-close-white float-end" aria-label="Close"></button>'
         + '</h5>'
         + '<h6 class="card-title">' + thing.location.name + ", " + thing.location.description + '</h6>'
         + '<div class="list-group">'
