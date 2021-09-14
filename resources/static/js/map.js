@@ -53,7 +53,6 @@ let chart = new Highcharts.Chart("chart", {
     legend: {enabled: true},
     yAxis: {
         title: "",
-        tickPositions:[0,10,20,30,40,50,60,70,80,90,100]
     },
     xAxis: {type: "datetime"},
     series: []
@@ -229,10 +228,25 @@ function markerOnClick(event) {
                         return [timestamp, parseFloat(observation[ir])];
                     });
 
+
+                    if (dictScale[datastreamName]) {
+                        let scale = dictScale[datastreamName];
+                        chart.update({
+                            yAxis: {
+                                tickPositions: scale
+                            }
+                        })
+                    } else {
+                        chart.update({
+                            yAxis: {
+                                tickPositions: undefined
+                            }
+                        })
+                    }
                     chart.addSeries({
                         id: datastream["@iot.id"],
                         name: thing.name + '(' + thing.location.name + ')' + ", " + datastream.name,
-                        data: data,
+                        data: data
                     });
                 })
 
