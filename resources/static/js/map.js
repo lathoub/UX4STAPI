@@ -48,14 +48,10 @@ fetch(stapiBaseUrl + "/Things?$expand=Locations,Datastreams($orderby=name asc)")
 // to the chart when the user click on the Market and Datastream
 
 let chart = new Highcharts.Chart("chart", {
-
-    title: {text: ""},
-    legend: {enabled: true},
-    yAxis: {
-        title: "",
-        tickPositions:[0,10,20,30,40,50,60,70,80,90,100]
-    },
-    xAxis: {type: "datetime"},
+    title: { text: "" },
+    legend: { enabled: true },
+    yAxis: { title: "" },
+    xAxis: { type: "datetime" },
     series: []
 });
 
@@ -119,7 +115,7 @@ function markerOnClick(event) {
     let thing = event.layer.feature;
 
     if (dictSelected[thing.name]) return;
-    dictSelected[thing.name] = {"thing": thing, "datastreams": []}
+    dictSelected[thing.name] = { "thing": thing, "datastreams": [] }
 
     var datastreamsHtml = ''
     thing.datastreams.forEach(function (datastream) {
@@ -229,11 +225,24 @@ function markerOnClick(event) {
                         return [timestamp, parseFloat(observation[ir])];
                     });
 
-                    chart.addSeries({
-                        id: datastream["@iot.id"],
-                        name: thing.name + '(' + thing.location.name + ')' + ", " + datastream.name,
-                        data: data,
-                    });
+                    // TODO:
+                    // indien ja -> ophalen en meegeven
+                    // indien nee -> defaults
+                    if (dictScale[datastreamName]) {
+                        var scale = dictScale[datastreamName]
+                        chart.addSeries({
+                            id: datastream["@iot.id"],
+                            name: thing.name + '(' + thing.location.name + ')' + ", " + datastream.name,
+                            data: data
+                            // TODO: hoe scale meegeven?
+                        });
+                    } else {
+                        chart.addSeries({
+                            id: datastream["@iot.id"],
+                            name: thing.name + '(' + thing.location.name + ')' + ", " + datastream.name,
+                            data: data
+                        });
+                    }
                 })
 
         } else {
