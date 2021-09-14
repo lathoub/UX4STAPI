@@ -1,48 +1,50 @@
 // Leaflet map initial view
 let map = L.map('map').setView([0, 0], 12);
 
-// Base server URL
-let stapiBaseUrl = 'https://stapi.snuffeldb.synology.me/FROST-Server/v1.0'
-
 // Leaflet map
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
 }).addTo(map);
 
-fetch(stapiBaseUrl + "/Things?$expand=Locations,Datastreams($orderby=name asc)")
-    .then(response => response.json())
-    .then(body => {
-        // Layergroups allows for multiple Things to be at the same location
-        // and still be able to select them indivisually
-        let markersClusterGroup = L.markerClusterGroup().addTo(map);
-        markersClusterGroup.on("click", markerOnClick);
+// var dictEndpoints
+serviceEndpoints.forEach(function (endpoint) {
 
-        // Convert the Locations into GeoJSON Features
-        let geoJsonFeatures = body.value.map(function (thing) {
-            return {
-                type: 'Feature',
-                id: thing['@iot.id'],
-                name: thing.name,
-                properties: thing.properties,
-                location: thing.Locations[0],   // cache location info
-                datastreams: thing.Datastreams, // cache Datastreams
-                geometry: thing.Locations[0].location,
-            };
-        });
+    fetch(endpoint.url + "/Things?$expand=Locations,Datastreams($orderby=name asc)")
+        .then(response => response.json())
+        .then(body => {
+            // Layergroups allows for multiple Things to be at the same location
+            // and still be able to select them indivisually
+            let markersClusterGroup = L.markerClusterGroup().addTo(map);
+            markersClusterGroup.on("click", markerOnClick);
 
-        // Convert to geoJSON features (and add title (for tooltip) and icon)
-        var geoJsonLayerGroup = L.geoJSON(geoJsonFeatures, {
-            pointToLayer: function (feature, latlng) {
-                return L.marker(latlng, {
-                    title: feature.name,
-                    icon: (feature.properties.version == 6) ? goldIcon : (feature.properties.version == 7) ? greenIcon : blueIcon
-                });
-            }
-        }).addTo(markersClusterGroup);
+            // Convert the Locations into GeoJSON Features
+            let geoJsonFeatures = body.value.map(function (thing) {
+                return {
+                    type: 'Feature',
+                    id: thing['@iot.id'],
+                    resource: endpoint.url + "/Things(" + thing['@iot.id'] + ")",
+                    name: thing.name,
+                    properties: thing.properties,
+                    location: thing.Locations[0],   // cache location info
+                    datastreams: thing.Datastreams, // cache Datastreams
+                    geometry: thing.Locations[0].location,
+                };
+            });
 
-        // Zoom in the map so that it fits the Things
-        map.fitBounds(geoJsonLayerGroup.getBounds());
-    })
+            // Convert to geoJSON features (and add title (for tooltip) and icon)
+            var geoJsonLayerGroup = L.geoJSON(geoJsonFeatures, {
+                pointToLayer: function (feature, latlng) {
+                    return L.marker(latlng, {
+                        title: feature.name,
+                        icon: (feature.properties.version == 6) ? goldIcon : (feature.properties.version == 7) ? greenIcon : blueIcon
+                    });
+                }
+            }).addTo(markersClusterGroup);
+
+            // Zoom in the map so that it fits the Things
+            map.fitBounds(geoJsonLayerGroup.getBounds());
+        })
+})
 
 // Create empty chart. Observation will be added
 // to the chart when the user click on the Market and Datastream
@@ -56,12 +58,12 @@ Highcharts.setOptions({
 
 let chart = new Highcharts.Chart("chart", {
 
-    title: {text: ""},
-    legend: {enabled: true},
+    title: { text: "" },
+    legend: { enabled: true },
     yAxis: {
         title: "",
     },
-    xAxis: {type: "datetime"},
+    xAxis: { type: "datetime" },
     series: []
 });
 
@@ -79,7 +81,7 @@ setInterval(function () {
             var lastDateTime = moment(data.xData[data.xData.length - 1])
 
             // request the more optimal dataArray for the results
-            let observationsUrl = stapiBaseUrl + '/Things(' + thing.id + ')/Datastreams(' + datastreamId + ')'
+            let observationsUrl = thing.resource + '/Datastreams(' + datastreamId + ')'
                 + "/Observations"
                 + "?$count=true"
                 + "&$top=1000"
@@ -125,7 +127,7 @@ function markerOnClick(event) {
     let thing = event.layer.feature;
 
     if (dictSelected[thing.name]) return;
-    dictSelected[thing.name] = {"thing": thing, "datastreams": []}
+    dictSelected[thing.name] = { "thing": thing, "datastreams": [] }
 
     var datastreamsHtml = ''
     thing.datastreams.forEach(function (datastream) {
@@ -210,7 +212,7 @@ function markerOnClick(event) {
             const startDateTime = moment(Date.now()).subtract(1, 'd')
 
             // request the more optimal dataArray for the results
-            let observationsUrl = stapiBaseUrl + '/Things(' + thing.id + ')/Datastreams(' + datastream['@iot.id'] + ')'
+            let observationsUrl = thing.resource + '/Datastreams(' + datastream['@iot.id'] + ')'
                 + "/Observations"
                 + "?$count=true"
                 + "&$top=1000"
