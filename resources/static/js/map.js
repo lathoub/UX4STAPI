@@ -225,12 +225,24 @@ function markerOnClick(event) {
                         return [timestamp, parseFloat(observation[ir])];
                     });
 
-                    // Add observations to the chart
-                    chart.addSeries({
-                        id: datastream["@iot.id"],
-                        name: thing.name + '(' + thing.location.name + ')' + ", " + datastream.name,
-                        data: data
-                    });
+                    // TODO:
+                    // indien ja -> ophalen en meegeven
+                    // indien nee -> defaults
+                    if (dictScale[datastreamName]) {
+                        var scale = dictScale[datastreamName]
+                        chart.addSeries({
+                            id: datastream["@iot.id"],
+                            name: thing.name + '(' + thing.location.name + ')' + ", " + datastream.name,
+                            data: data
+                            // TODO: hoe scale meegeven?
+                        });
+                    } else {
+                        chart.addSeries({
+                            id: datastream["@iot.id"],
+                            name: thing.name + '(' + thing.location.name + ')' + ", " + datastream.name,
+                            data: data
+                        });
+                    }
                 })
 
         } else {
