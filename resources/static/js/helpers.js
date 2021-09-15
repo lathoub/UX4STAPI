@@ -13,18 +13,6 @@ serviceEndpoints = [
         name: "snuffeldb",
         url: "https://stapi.snuffeldb.synology.me/FROST-Server/v1.0"
     },
-    {
-        name: "snuffeldb",
-        url: "https://airquality-frost.k8s.ilt-dmz.iosb.fraunhofer.de/v1.1"
-    },
-    {
-        name: "covid case",
-        url: "http://covidsta.hft-stuttgart.de/server/v1.1"
-    },
-    {
-        name: "hamburg",
-        url: "https://demography.k8s.ilt-dmz.iosb.fraunhofer.de/v1.1"
-    }
 ]
 
 function getSelectedThings() {
