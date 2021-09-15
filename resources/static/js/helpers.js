@@ -11,9 +11,9 @@ dictScale["SoundPressure"] = [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100]
 serviceEndpoints = [
     {
         name: "snuffeldb",
-            url: "https://stapi.snuffeldb.synology.me/FROST-Server/v1.0"
+        url: "https://stapi.snuffeldb.synology.me/FROST-Server/v1.0"
     },
-        {
+    {
         name: "snuffeldb",
         url: "https://airquality-frost.k8s.ilt-dmz.iosb.fraunhofer.de/v1.1"
     },
@@ -51,7 +51,6 @@ function getDatastreamItem(thingName, datastreamName) {
             if (datastreamItem.childNodes[1].textContent == datastreamName)
                 return datastreamItem
     }
-    return null
 }
 
 function getThing(name) {
@@ -59,6 +58,7 @@ function getThing(name) {
     if (!thingProxy) return null
     return thingProxy.thing
 }
+
 function getDatastream(thing, name) {
     for (const datastream of thing.datastreams) {
         if (datastream.name == name)
