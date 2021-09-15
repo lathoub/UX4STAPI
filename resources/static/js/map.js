@@ -153,7 +153,7 @@ function markerOnClick(event) {
                 var datastreamItem = getDatastreamItem(thing.name, datastream.name)
                 if (body.value.length > 0) {
                     var phenomenonTimeInterval = body.value[0].phenomenonTime.split("/")
-                    var toen = moment(phenomenonTimeInterval[phenomenonTimeInterval.length-1])
+                    var toen = moment(phenomenonTimeInterval[phenomenonTimeInterval.length - 1])
                     datastreamItem.className = "list-group-item"
                     datastreamItem.childNodes[2].textContent = toen.fromNow()
                     datastreamItem.childNodes[2].className = "badge bg-primary rounded-pill float-end"
@@ -172,8 +172,8 @@ function markerOnClick(event) {
         + '<button type="button" id="header-button-delete" class="btn btn-danger btn-sm float-end">Delete</button>'
         + '<button type="button" id="header-button-configure" class="btn btn-primary btn-sm float-end">Configure</button>'
         + '</h5>'
-        + '<div id="card-title" class="card-title">' + thing.location.name + ", " + thing.location.description 
-        + '<button type="button" id="title-button-locate" class="btn btn-primary btn-sm float-end">Position</button>'
+        + '<div id="card-title" class="card-title">' + thing.location.name + ", " + thing.location.description
+        + '<button type="button" id="title-button-locate" class="btn btn-primary btn-sm float-end">Move</button>'
         + '</div>'
         + '<div class="list-group">'
         + datastreamsHtml
@@ -182,12 +182,48 @@ function markerOnClick(event) {
     myCard.appendTo('#contentPanel');
 
     $('#header-button-delete').on('click', function (e) {
+        //  $('#exampleModal').modal('show'); 
+        let deviceName = prompt("Enter the device name to confirm deletion:", "");
+        if (deviceName) {
+            if (deviceName == 42) {
+                $.ajax({
+                    url: stapiBaseUrl + '/Things(' + deviceName + ')',
+                    type: 'DELETE',
+                    success: function (result) {
+                        console.log('delete device success');
+                    }
+                });
+            }
+            else
+                alert('device name did not match, delete aborted');
+        }
     })
 
     $('#header-button-configure').on('click', function (e) {
     })
 
     $('#title-button-locate').on('click', function (e) {
+        let locationName = prompt("Address or name of the location:", "");
+        if (locationName && locationName != '') {
+            // TODO: geocoder from address to lat/long
+            var lat = 51.1
+            var lng = 4.1
+
+            // POST new location to database
+            var newLocation = {};
+            newLocation.name = locationName
+            newLocation.description = locationName
+            newLocation.encodingType = 'application/vnd.geo+json'
+            newLocation.location = {}
+            newLocation.location.type = 'point'
+            newLocation.location.coordinates = [lat, lon]
+            /*
+                        $.post(stapiBaseUrl + '/Things(' + deviceName + ')/Locations', newLocation, function (data) {
+                            $(".result").html(data);
+                            // TODO: refresh the map: 1) collapse the cluster and 2) refresh markers
+                        });
+            */
+        }
     })
 
     $('.btn-close').on('click', function (e) {

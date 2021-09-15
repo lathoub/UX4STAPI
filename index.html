@@ -56,14 +56,16 @@
                 <div class="collapse navbar-collapse" id="navbarScroll">
                     <ul class="navbar-nav me-auto my-2 my-lg-0 navbar-nav-scroll" style="--bs-scroll-height: 100px;">
                         <li class="nav-item">
-                            <a class="nav-link active" style="color: #bfbfc0 !important;"  aria-current="page" href="#">Home</a>
+                            <a class="nav-link active" style="color: #bfbfc0 !important;" aria-current="page"
+                                href="#">Home</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" style="color: #bfbfc0 !important;" href="#">Link</a>
                         </li>
                         <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" style="color: #bfbfc0 !important;" href="#" id="navbarScrollingDropdown" role="button"
-                                data-bs-toggle="dropdown" aria-expanded="false">
+                            <a class="nav-link dropdown-toggle" style="color: #bfbfc0 !important;" href="#"
+                                id="navbarScrollingDropdown" role="button" data-bs-toggle="dropdown"
+                                aria-expanded="false">
                                 Link
                             </a>
                             <ul class="dropdown-menu" aria-labelledby="navbarScrollingDropdown">
@@ -91,6 +93,27 @@
 
     <div id="map"></div>
     <div id="chart" class="highcharts-figure"></div>
+
+    <!-- Modal delete -->
+    <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+                    <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close">
+                    </button>
+                </div>
+                <div class="modal-body">
+                    ...
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary">Save changes</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <!--    Our code     -->
     <script type="text/javascript" src="resources/static/js/leaflet-color-markers.js"></script>
