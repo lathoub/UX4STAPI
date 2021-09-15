@@ -262,12 +262,15 @@ function markerOnClick(event) {
                             newLocation.location.coordinates = [layer._latlng.lng, layer._latlng.lat]
 
                             fetch(layer.feature.resource + '/Locations', {
-                                method: 'post',
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
                                 body: JSON.stringify(newLocation)
                             })
-                                .then(response => response.json())
+                                .then(response => {
+                                    response.json()
+                                })
                                 .then(data => {
-                                    console.log('Success:', data);
+                                    console.log('Success:');
                                 })
                                 .catch((error) => {
                                     console.error('Error:', error);
@@ -283,45 +286,6 @@ function markerOnClick(event) {
 
             $(this).text("Move")
         }
-
-        //var thing = getThing(thingName)
-
-
-        // TODO kan ik aan de marker?
-        $.each(map._layers, function (markerName) {
-        })
-
-        /*
-                let locationName = prompt("Address or name of the location:", "");
-                if (locationName && locationName != '') {
-                    var geoCode = 'https://geocode.xyz/' + locationName.replace(" ", "+") + '?json=1&auth=149742768019389306736x83007'
-                    fetch(geoCode)
-                        .then(response => response.json())
-                        .then(body => {
-                            var newLocation = {};
-                            newLocation.name = locationName
-                            newLocation.description = locationName
-                            newLocation.encodingType = 'application/vnd.geo+json'
-                            newLocation.location = {}
-                            newLocation.location.type = 'Point'
-                            newLocation.location.coordinates = [Number(body.longt), Number(body.latt),]
-        
-                            console.log(JSON.stringify(newLocation))
-        
-                            fetch(thing.resource + '/Locations', {
-                                method: 'post',
-                                body: JSON.stringify(newLocation)
-                            })
-                                .then(response => response.json())
-                                .then(data => {
-                                    console.log('Success:', data);
-                                })
-                                .catch((error) => {
-                                    console.error('Error:', error);
-                                });
-                        })
-                }
-                */
     })
 
     $('.btn-close').on('click', function (e) {
