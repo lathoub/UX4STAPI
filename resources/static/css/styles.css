@@ -39,11 +39,20 @@ body{
     margin-top: 5px ;
 }
 
+#card-title {
+    margin-left: 10px ;
+}
+
 #header-button-delete{
     margin-right: 10px ;
 }
 
 #header-button-configure{
+    margin-right: 10px ;
+}
+
+#title-button-locate{
+    margin-top: 5px ;
     margin-right: 10px ;
 }
 

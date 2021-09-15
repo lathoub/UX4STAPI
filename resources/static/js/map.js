@@ -172,7 +172,9 @@ function markerOnClick(event) {
         + '<button type="button" id="header-button-delete" class="btn btn-danger btn-sm float-end">Delete</button>'
         + '<button type="button" id="header-button-configure" class="btn btn-primary btn-sm float-end">Configure</button>'
         + '</h5>'
-        + '<h6 class="card-title">' + thing.location.name + ", " + thing.location.description + '</h6>'
+        + '<div id="card-title" class="card-title">' + thing.location.name + ", " + thing.location.description 
+        + '<button type="button" id="title-button-locate" class="btn btn-primary btn-sm float-end">Position</button>'
+        + '</div>'
         + '<div class="list-group">'
         + datastreamsHtml
         + '</div>'
@@ -180,11 +182,12 @@ function markerOnClick(event) {
     myCard.appendTo('#contentPanel');
 
     $('#header-button-delete').on('click', function (e) {
-        e.stopPropagation();
     })
 
     $('#header-button-configure').on('click', function (e) {
-        e.stopPropagation();
+    })
+
+    $('#title-button-locate').on('click', function (e) {
     })
 
     $('.btn-close').on('click', function (e) {
