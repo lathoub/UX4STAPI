@@ -169,8 +169,8 @@ function markerOnClick(event) {
         + '<h5 class="card-header">'
         + '<span>' + thing.name + '</span>'
         + '<button type="button" class="btn-close btn-close-white float-end" aria-label="Close"></button>'
-        + '<button type="button" id="header-button" class="btn btn-danger btn-sm float-end">Delete</button>'
-        + '<button type="button" id="header-button" class="btn btn-primary btn-sm float-end">Configure</button>'
+        + '<button type="button" id="header-button-delete" class="btn btn-danger btn-sm float-end">Delete</button>'
+        + '<button type="button" id="header-button-configure" class="btn btn-primary btn-sm float-end">Configure</button>'
         + '</h5>'
         + '<h6 class="card-title">' + thing.location.name + ", " + thing.location.description + '</h6>'
         + '<div class="list-group">'
@@ -178,6 +178,14 @@ function markerOnClick(event) {
         + '</div>'
         + '</div>');
     myCard.appendTo('#contentPanel');
+
+    $('#header-button-delete').on('click', function (e) {
+        e.stopPropagation();
+    })
+
+    $('#header-button-configure').on('click', function (e) {
+        e.stopPropagation();
+    })
 
     $('.btn-close').on('click', function (e) {
         e.stopPropagation();

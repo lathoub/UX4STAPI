@@ -39,7 +39,11 @@ body{
     margin-top: 5px ;
 }
 
-#header-button{
+#header-button-delete{
+    margin-right: 10px ;
+}
+
+#header-button-configure{
     margin-right: 10px ;
 }
 
