@@ -1,4 +1,5 @@
 var dictSelected = {}
+
 var dictScale = {}
 dictScale["AirTemperature"] = [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100]
 dictScale["NO2"] = [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100]
@@ -14,14 +15,6 @@ serviceEndpoints = [
         url: "https://stapi.snuffeldb.synology.me/FROST-Server/v1.0"
     },
 ]
-
-function getSelectedThings() {
-    var thingsName = []
-    var contentPanel = document.getElementById("contentPanel")
-    for (const thingCard of contentPanel.childNodes)
-        thingsName.push(thingCard.childNodes[0].textContent)
-    return thingsName
-}
 
 function getThingCard(thingName) {
     var contentPanel = document.getElementById("contentPanel")

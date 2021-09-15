@@ -39,10 +39,20 @@ serviceEndpoints.forEach(function (endpoint) {
             // Convert to geoJSON features (and add title (for tooltip) and icon)
             var geoJsonLayerGroup = L.geoJSON(geoJsonFeatures, {
                 pointToLayer: function (feature, latlng) {
-                    return L.marker(latlng, {
+
+                    var marker = L.marker(latlng, {
                         title: feature.name,
+                        //             draggable: true,
                         icon: (feature.properties.version == 6) ? goldIcon : (feature.properties.version == 7) ? greenIcon : blueIcon
                     });
+
+                    marker.on("dragstart", function (e) {
+                    });
+                    marker.on("dragend", function (e) {
+                        console.log(e)
+                    });
+
+                    return marker
                 }
             }).addTo(markersClusterGroup);
 
@@ -185,7 +195,7 @@ function markerOnClick(event) {
         //  $('#exampleModal').modal('show'); 
         let deviceName = prompt("Enter the device name to confirm deletion:", "");
         if (deviceName) {
-            if (deviceName == 42) {
+            if (deviceName == $(this)[0].parentNode.childNodes[0].textContent) {
                 $.ajax({
                     url: stapiBaseUrl + '/Things(' + deviceName + ')',
                     type: 'DELETE',
@@ -203,27 +213,115 @@ function markerOnClick(event) {
     })
 
     $('#title-button-locate').on('click', function (e) {
-        let locationName = prompt("Address or name of the location:", "");
-        if (locationName && locationName != '') {
-            // TODO: geocoder from address to lat/long
-            var lat = 51.1
-            var lng = 4.1
 
-            // POST new location to database
-            var newLocation = {};
-            newLocation.name = locationName
-            newLocation.description = locationName
-            newLocation.encodingType = 'application/vnd.geo+json'
-            newLocation.location = {}
-            newLocation.location.type = 'point'
-            newLocation.location.coordinates = [lat, lon]
-            /*
-                        $.post(stapiBaseUrl + '/Things(' + deviceName + ')/Locations', newLocation, function (data) {
-                            $(".result").html(data);
-                            // TODO: refresh the map: 1) collapse the cluster and 2) refresh markers
-                        });
-            */
+        var parent = $(this)[0].parentNode.parentNode
+        var thingName = parent.childNodes[0].childNodes[0].textContent
+
+        if ($(this).text() == "Move") {
+            // Start to move the Marker/Thing
+
+            // ADD: 2 text edit
+
+            $("#card-title").append(
+                '<input type="text" id="name" class="form-control" placeholder="name" aria-label="Username">'
+                + '<input type="text" id="description" class="form-control" placeholder="description" aria-label="Username">'
+            )
+
+            map.eachLayer(function (layer) {
+                if (layer instanceof L.Marker) {
+                    if (layer.feature && layer.feature.name == thingName) {
+                        layer.dragging.enable()
+
+                        $("#name").val(layer.feature.location.name)
+                        $("#description").val(layer.feature.location.description)
+                    }
+                }
+            });
+
+            $(this).text("Done")
+
+        } else {
+            // End move of the Marker/Thing
+
+            // lock the item
+            map.eachLayer(function (layer) {
+                if (layer instanceof L.Marker) {
+                    if (layer.feature) {
+                        if (layer.feature.name == thingName) {
+                            layer.dragging.disable()
+
+                            layer.feature.location.name = $("#name").val()
+                            layer.feature.location.description = $("#description").val()
+
+                            var newLocation = {};
+                            newLocation.name = layer.feature.location.name
+                            newLocation.description = layer.feature.location.description
+                            newLocation.encodingType = 'application/vnd.geo+json'
+                            newLocation.location = {}
+                            newLocation.location.type = 'Point'
+                            newLocation.location.coordinates = [layer._latlng.lng, layer._latlng.lat]
+
+                            fetch(layer.feature.resource + '/Locations', {
+                                method: 'post',
+                                body: JSON.stringify(newLocation)
+                            })
+                                .then(response => response.json())
+                                .then(data => {
+                                    console.log('Success:', data);
+                                })
+                                .catch((error) => {
+                                    console.error('Error:', error);
+                                });
+
+                            // remove inputs
+                            $("#card-title").remove('#name')
+                            $("#card-title").remove('#description')
+                        }
+                    }
+                }
+            });
+
+            $(this).text("Move")
         }
+
+        //var thing = getThing(thingName)
+
+
+        // TODO kan ik aan de marker?
+        $.each(map._layers, function (markerName) {
+        })
+
+        /*
+                let locationName = prompt("Address or name of the location:", "");
+                if (locationName && locationName != '') {
+                    var geoCode = 'https://geocode.xyz/' + locationName.replace(" ", "+") + '?json=1&auth=149742768019389306736x83007'
+                    fetch(geoCode)
+                        .then(response => response.json())
+                        .then(body => {
+                            var newLocation = {};
+                            newLocation.name = locationName
+                            newLocation.description = locationName
+                            newLocation.encodingType = 'application/vnd.geo+json'
+                            newLocation.location = {}
+                            newLocation.location.type = 'Point'
+                            newLocation.location.coordinates = [Number(body.longt), Number(body.latt),]
+        
+                            console.log(JSON.stringify(newLocation))
+        
+                            fetch(thing.resource + '/Locations', {
+                                method: 'post',
+                                body: JSON.stringify(newLocation)
+                            })
+                                .then(response => response.json())
+                                .then(data => {
+                                    console.log('Success:', data);
+                                })
+                                .catch((error) => {
+                                    console.error('Error:', error);
+                                });
+                        })
+                }
+                */
     })
 
     $('.btn-close').on('click', function (e) {
