@@ -138,7 +138,7 @@ function markerOnClick(event) {
     var datastreamsHtml = ''
     thing.datastreams.forEach(function (datastream) {
         datastreamsHtml += '<label class="list-group-item">'
-            + '<input class="form-check-input me-1" type="checkbox" value="">' + datastream.name + '<span class="badge bg-primary rounded-pill float-end"></span></label>'
+            + '<input class="form-check-input me-1" type="checkbox" value="">' + datastream.name + '<span class="badge bg-primary rounded-pill"></span></label>'
 
         var observationsUrl = datastream["@iot.selfLink"]
         observationsUrl += "/Observations"
@@ -203,7 +203,7 @@ function markerOnClick(event) {
     $('.form-check-input').change(function (e) {
         // from UI
         const datastreamName = this.parentNode.childNodes[1].data
-        const thingName = this.parentNode.parentNode.parentNode.childNodes[0].textContent
+        const thingName = this.parentNode.parentNode.parentNode.childNodes[0].childNodes[0].textContent
 
         const thing = getThing(thingName)
         if (!thing) return // hmm, should already be selected 

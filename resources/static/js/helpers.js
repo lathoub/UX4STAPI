@@ -25,9 +25,13 @@ function getSelectedThings() {
 
 function getThingCard(thingName) {
     var contentPanel = document.getElementById("contentPanel")
-    for (const thingCard of contentPanel.childNodes)
-        if (thingCard.childNodes[0].textContent == thingName)
+    for (const thingCard of contentPanel.childNodes) {
+        var headerItem = thingCard.childNodes[0]
+        var thingItem = headerItem.childNodes[0]
+        if (thingItem.textContent == thingName)
             return thingCard
+    }
+    console.log("getThingCard returned null")
     return null
 }
 
@@ -39,6 +43,8 @@ function getDatastreamItem(thingName, datastreamName) {
             if (datastreamItem.childNodes[1].textContent == datastreamName)
                 return datastreamItem
     }
+    console.log("getDatastreamItem returned null")
+    return null
 }
 
 function getThing(name) {
