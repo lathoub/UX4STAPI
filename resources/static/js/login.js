@@ -32,3 +32,20 @@ $(()=>{
     $('#logreg-forms #btn-signup').click(toggleSignUp);
     $('#logreg-forms #cancel_signup').click(toggleSignUp);
 })
+
+const signupForm = document.querySelector('#signUpForm');
+signupForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+
+    // get user info
+    const email = signupForm['user-email'].value;
+    const password = signupForm['user-pass'].value;
+
+    // sign up the user
+    auth.createUserWithEmailAndPassword(email, password).then(cred => {
+        console.log(cred.user);
+    });
+});
+
+
+
