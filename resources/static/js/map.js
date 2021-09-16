@@ -7,7 +7,7 @@ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
 }).addTo(map);
 
 // endpoint taken from https://inspire.ec.europa.eu/good-practice/ogc-sensorthings-api-inspire-download-service
-var serviceEndpoint = prompt("Please enter a SensorThings API endpoint", " http://covidsta.hft-stuttgart.de/server/v1.1");
+var serviceEndpoint = prompt("Please enter a SensorThings API endpoint", " https://covidsta.hft-stuttgart.de/server/v1.1");
 serviceEndpoints.push({ name: "demo", url: serviceEndpoint })
 
 // var dictEndpoints
