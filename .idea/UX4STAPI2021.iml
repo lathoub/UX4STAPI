@@ -8,19 +8,11 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="library" name="jquery" level="application" />
-    <orderEntry type="library" name="moment.js" level="application" />
-    <orderEntry type="library" name="highstock" level="application" />
-    <orderEntry type="library" name="leaflet-search" level="application" />
-    <orderEntry type="library" name="split.js" level="application" />
-    <orderEntry type="library" name="highcharts" level="application" />
-    <orderEntry type="library" name="series-label" level="application" />
-    <orderEntry type="library" name="exporting" level="application" />
-    <orderEntry type="library" name="export-data" level="application" />
-    <orderEntry type="library" name="accessibility" level="application" />
-    <orderEntry type="library" name="data" level="application" />
-    <orderEntry type="library" name="leaflet.markercluster" level="application" />
-    <orderEntry type="library" name="stock-tools" level="application" />
-    <orderEntry type="library" name="all" level="application" />
+    <orderEntry type="library" name="firebase-app" level="application" />
+    <orderEntry type="library" name="firebase-auth" level="application" />
+    <orderEntry type="library" name="firebase-firestore" level="application" />
+    <orderEntry type="library" name="firebase-app" level="application" />
+    <orderEntry type="library" name="firebase-auth" level="application" />
+    <orderEntry type="library" name="firebase-firestore" level="application" />
   </component>
 </module>
