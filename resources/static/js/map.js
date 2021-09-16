@@ -39,7 +39,7 @@ serviceEndpoints.forEach(function (endpoint) {
                 };
             });
 
-            // Convert to geoJSON features (and add title (for tooltip) and icon)
+            // Convert to geoJSON features (and add title (for tooltip))
             var geoJsonLayerGroup = L.geoJSON(geoJsonFeatures, {
                 pointToLayer: function (feature, latlng) {
 
