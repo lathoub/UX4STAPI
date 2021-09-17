@@ -228,9 +228,7 @@ function markerOnClick(event) {
 
         var observationsUrl = datastream["@iot.selfLink"]
         if (!observationsUrl.includes("WFS")) observationsUrl += "/Observations?$orderby=resultTime desc&$top=1"
-        if (observationsUrl.includes("WFS")) observationsUrl += "&count=1"
-
-        observationsUrl = observationsUrl.replace("http://", "https://")
+        if (observationsUrl.includes("WFS")) observationsUrl += "&count=1&cql_filter=ab_eoi_code='" + thing.name + "'"
         console.log(observationsUrl)
 
         if (observationsUrl.includes("WFS"))
@@ -281,103 +279,6 @@ function markerOnClick(event) {
         + '</div>'
         + '</div>');
     myCard.appendTo('#contentPanel');
-
-    $('#header-button-delete').on('click', function (e) {
-        //  $('#exampleModal').modal('show'); 
-        let deviceName = prompt("Enter the device name to confirm deletion:", "");
-        if (deviceName) {
-            if (deviceName == $(this)[0].parentNode.childNodes[0].textContent) {
-                $.ajax({
-                    url: stapiBaseUrl + '/Things(' + deviceName + ')',
-                    type: 'DELETE',
-                    success: function (result) {
-                        console.log('delete device success');
-                    }
-                });
-            }
-            else
-                alert('device name did not match, delete aborted');
-        }
-    })
-
-    $('#header-button-configure').on('click', function (e) {
-    })
-
-    $('#title-button-locate').on('click', function (e) {
-
-        var parent = $(this)[0].parentNode.parentNode
-        var thingName = parent.childNodes[0].childNodes[0].textContent
-
-        if ($(this).text() == "Move") {
-            // Start to move the Marker/Thing
-
-            // ADD: 2 text edit
-
-            $("#card-title").append(
-                '<input type="text" id="name" class="form-control" placeholder="name" aria-label="Username">'
-                + '<input type="text" id="description" class="form-control" placeholder="description" aria-label="Username">'
-            )
-
-            map.eachLayer(function (layer) {
-                if (layer instanceof L.Marker) {
-                    if (layer.feature && layer.feature.name == thingName) {
-                        layer.dragging.enable()
-
-                        $("#name").val(layer.feature.location.name)
-                        $("#description").val(layer.feature.location.description)
-                    }
-                }
-            });
-
-            $(this).text("Done")
-
-        } else {
-            // End move of the Marker/Thing
-
-            // lock the item
-            map.eachLayer(function (layer) {
-                if (layer instanceof L.Marker) {
-                    if (layer.feature) {
-                        if (layer.feature.name == thingName) {
-                            layer.dragging.disable()
-
-                            layer.feature.location.name = $("#name").val()
-                            layer.feature.location.description = $("#description").val()
-
-                            var newLocation = {};
-                            newLocation.name = layer.feature.location.name
-                            newLocation.description = layer.feature.location.description
-                            newLocation.encodingType = 'application/vnd.geo+json'
-                            newLocation.location = {}
-                            newLocation.location.type = 'Point'
-                            newLocation.location.coordinates = [layer._latlng.lng, layer._latlng.lat]
-
-                            fetch(layer.feature.resource + '/Locations', {
-                                method: 'POST',
-                                headers: { 'Content-Type': 'application/json' },
-                                body: JSON.stringify(newLocation)
-                            })
-                                .then(response => {
-                                    response.json()
-                                })
-                                .then(data => {
-                                    console.log('Success:');
-                                })
-                                .catch((error) => {
-                                    console.error('Error:', error);
-                                });
-
-                            // remove inputs
-                            $("#card-title").remove('#name')
-                            $("#card-title").remove('#description')
-                        }
-                    }
-                }
-            });
-
-            $(this).text("Move")
-        }
-    })
 
     $('.btn-close').on('click', function (e) {
         e.stopPropagation();
@@ -476,21 +377,6 @@ function markerOnClick(event) {
                             return [timestamp, value];
                         });
 
-
-                        if (dictScale[datastreamName]) {
-                            let scale = dictScale[datastreamName];
-                            chart.update({
-                                yAxis: {
-                                    tickPositions: scale
-                                }
-                            })
-                        } else {
-                            chart.update({
-                                yAxis: {
-                                    tickPositions: undefined
-                                }
-                            })
-                        }
                         chart.addSeries({
                             id: datastream["@iot.id"],
                             name: thing.name + '(' + thing.location.name + ')' + ", " + datastream.name,
