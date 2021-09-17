@@ -1,7 +1,24 @@
 var dictSelected = {}
 
+var dictScale = {}
+dictScale["AirTemperature"] = [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100]
+dictScale["NO2"] = [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100]
+dictScale["PM10"] = [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100]
+dictScale["PM25"] = [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100]
+dictScale["RelativeHumidity"] = [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100]
+dictScale["SoundPressure"] = [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100]
+
 // database of serice endpoints
-serviceEndpoints = []
+serviceEndpoints = [
+    {
+        name: "snuffeldb",
+        url: "https://stapi.snuffeldb.synology.me/FROST-Server/v1.0"
+    },
+    {
+        name: "VMM Open data",
+        url: "https://geo.irceline.be/realtime/ows?service=WFS&version=1.3.0"
+    },
+]
 
 function getThingCard(thingName) {
     var contentPanel = document.getElementById("contentPanel")

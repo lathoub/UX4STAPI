@@ -5,9 +5,9 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "type": "pwa-msedge",
+            "type": "chrome",
             "request": "launch",
-            "name": "Open index.html",
+            "name": "Open login.html",
             "file": "c:\\Users\\bart\\Documents\\github\\UX4STAPI\\index.html"
         }
     ]
