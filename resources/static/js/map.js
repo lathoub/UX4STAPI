@@ -180,10 +180,10 @@ function markerOnClick(event) {
         + '<span>' + thing.name + '</span>'
         + '<button type="button" class="btn-close btn-close-white float-end" aria-label="Close"></button>'
         + '<button type="button" id="header-button-delete" class="btn btn-danger btn-sm float-end">Delete</button>'
-        + '<button type="button" id="header-button-configure" class="btn btn-primary btn-sm float-end">Configure</button>'
+        + '<button type="button" id="header-button-configure" class="btn btn-primary btn-sm float-end admin-buttons">Configure</button>'
         + '</h5>'
         + '<div id="card-title" class="card-title">' + thing.location.name + ", " + thing.location.description
-        + '<button type="button" id="title-button-locate" class="btn btn-primary btn-sm float-end">Move</button>'
+        + '<button type="button" id="title-button-locate" class="btn btn-primary btn-sm float-end admin-buttons">Move</button>'
         + '</div>'
         + '<div class="list-group">'
         + datastreamsHtml

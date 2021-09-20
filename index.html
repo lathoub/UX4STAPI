@@ -56,8 +56,9 @@
                 <div class="collapse navbar-collapse" id="navbarScroll">
                     <ul class="navbar-nav me-auto my-2 my-lg-0 navbar-nav-scroll" style="--bs-scroll-height: 100px;">
                         <li class="nav-item">
-                            <a class="nav-link active" style="color: #bfbfc0 !important;" aria-current="page"
-                                href="#">Home</a>
+                            <a class="nav-link active modal-trigger" data-toggle="modal"
+                               data-target="#modal-account" style="color: #bfbfc0 !important;" aria-current="page"
+                                id ="accountBtn" href="#">Account</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link"  id="logout" style="color: #bfbfc0 !important;" href="login.html">Logout</a>
@@ -93,6 +94,14 @@
 
     <div id="map"></div>
     <div id="chart" class="highcharts-figure"></div>
+
+    <div id="modal-account" class="modal">
+        <div class="modal-content center-align">
+            <h4>Account details</h4><br />
+            <div class="account-details"></div>
+            <div class="account-extras"></div>
+        </div>
+    </div>
 
     <!-- Modal delete -->
     <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"

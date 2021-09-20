@@ -6,7 +6,6 @@ function toggleResetPswd(e) {
 
 function toggleSignUp(e) {
     e.preventDefault();
-    $('#logreg-forms .form-signin').toggle(); // display:block or none
 }
 
 $(() => {
@@ -15,20 +14,33 @@ $(() => {
     $('#logreg-forms #cancel_reset').click(toggleResetPswd);
 })
 
+const accountDetails = document.querySelector('.account-details');
+
+const setupAccount = (user) => {
+    if (user){
+          const html = ''
+        + '<div>' + user.email + '</div>';
+          accountDetails.innerHTML = html;
+    } else  {
+        accountDetails.innerHTML = '';
+    }
+}
+
 // Listen to auth status changes
-    auth.onAuthStateChanged(user =>{
-        if (user){
-            console.log("User logged in: ", user)
-        } else {
-            location.href = 'login.html';
-            console.log("User logged out")
-        }
-    })
+auth.onAuthStateChanged(user => {
+    if (user) {
+        setupAccount(user);
+        console.log("User logged in: ", user)
+    } else {
+        location.href = 'login.html';
+        console.log("User logged out")
+        setupAccount();
+    }
+})
+
 
 // Sign up
-$('#btn-signupForm').click(function () {
-    $('#modal-signup').modal('hide');
-})
+
 const signupForm = document.querySelector('#signup-form');
 signupForm.addEventListener('submit', (e) => {
     e.preventDefault();
@@ -36,11 +48,14 @@ signupForm.addEventListener('submit', (e) => {
     const email = signupForm['signupEmail'].value;
     const password = signupForm['signupPassword'].value;
 
-    console.log(email, password);
     // sign up the user
-    auth.createUserWithEmailAndPassword(email, password).then(cred => {
+    auth.createUserWithEmailAndPassword(email, password).then(() => {
+        signupForm.querySelector('.error').innerHTML = '';
+            $('#modal-signup').modal('hide');
+            signupForm.reset();
+    }).catch(err => {
+        signupForm.querySelector('.error').innerHTML = err.message;
     })
-    signupForm.reset();
 });
 
 // Sign in
@@ -53,10 +68,11 @@ loginForm.addEventListener('submit', (e) => {
     const password = loginForm['inputPassword'].value;
 
     auth.signInWithEmailAndPassword(email, password).then(cred => {
-        console.log(cred.user);
         location.href = 'index.html';
+        loginForm.reset();
+    }) .catch(err => {
+        loginForm.querySelector('.error').innerHTML = err.message;
     })
-    loginForm.reset();
 });
 
 // Sign out
@@ -68,6 +84,7 @@ logout.addEventListener('click', (e) => {
     })
     location.href = 'login.html';
 })
+
 
 
 
