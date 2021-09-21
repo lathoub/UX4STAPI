@@ -220,7 +220,10 @@ function markerOnClick(event) {
     var datastreamsHtml = ''
     thing.datastreams.forEach(function (datastream) {
         datastreamsHtml += '<label class="list-group-item">'
-            + '<input class="form-check-input me-1" type="checkbox" value="">' + datastream.name + '<span class="badge bg-primary rounded-pill"></span></label>'
+            + '<input class="form-check-input me-1" type="checkbox" value="">' + datastream.name
+            + '<span class="p-0"></span>'
+            + '<span class="badge bg-primary rounded-pill"></span>'
+            + '</label>'
 
         var observationsUrl = datastream["@iot.selfLink"]
         if (!observationsUrl.includes("WFS")) observationsUrl
@@ -239,12 +242,12 @@ function markerOnClick(event) {
                         var timestamp = body.features[0].properties.timestamp
                         var toen = moment(timestamp)
                         datastreamItem.className = "list-group-item"
-                        datastreamItem.childNodes[2].textContent = toen.fromNow()
-                        datastreamItem.childNodes[2].className = "badge bg-primary rounded-pill float-end"
+                        datastreamItem.childNodes[3].textContent = toen.fromNow()
+                        datastreamItem.childNodes[3].className = "badge bg-primary rounded-pill float-end"
                     } else {
                         datastreamItem.className = "list-group-item disabled"
-                        datastreamItem.childNodes[2].textContent = "no data"
-                        datastreamItem.childNodes[2].className = "badge bg-warning rounded-pill float-end"
+                        datastreamItem.childNodes[3].textContent = "no data"
+                        datastreamItem.childNodes[3].className = "badge bg-warning rounded-pill float-end"
                     }
                 });
         else
@@ -255,15 +258,15 @@ function markerOnClick(event) {
                     if (body && body.phenomenonTime) {
                         var phenomenonTimeInterval = body.phenomenonTime.split("/")
                         var toen = moment(phenomenonTimeInterval[phenomenonTimeInterval.length - 1])
-                    //    datastreamItem.childNodes[1].textContent += " (" + body.unitOfMeasurement.symbol + ")"
+                        datastreamItem.childNodes[2].textContent += " (" + body.unitOfMeasurement.symbol + ")"
                         datastreamItem.className = "list-group-item"
-                        datastreamItem.childNodes[2].textContent = toen.fromNow()
-                        datastreamItem.childNodes[2].className = "badge bg-primary rounded-pill float-end"
+                        datastreamItem.childNodes[3].textContent = toen.fromNow()
+                        datastreamItem.childNodes[3].className = "badge bg-primary rounded-pill float-end"
                     } else {
                         datastreamItem.className = "list-group-item disabled"
-                    //    datastreamItem.childNodes[1].textContent += " (" + body.unitOfMeasurement.symbol + ")"
-                        datastreamItem.childNodes[2].textContent = "no data"
-                        datastreamItem.childNodes[2].className = "badge bg-warning rounded-pill float-end"
+                        datastreamItem.childNodes[2].textContent += " (" + body.unitOfMeasurement.symbol + ")"
+                        datastreamItem.childNodes[3].textContent = "no data"
+                        datastreamItem.childNodes[3].className = "badge bg-warning rounded-pill float-end"
                     }
                 });
     });
