@@ -6,6 +6,11 @@ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
 }).addTo(map);
 
+// Layergroups allows for multiple Things to be at the same location
+// and still be able to select them indivisually
+let markersClusterGroup = L.markerClusterGroup().addTo(map);
+markersClusterGroup.on("click", markerOnClick);
+
 // var dictEndpoints
 serviceEndpoints.forEach(function (endpoint) {
 
@@ -46,11 +51,6 @@ serviceEndpoints.forEach(function (endpoint) {
                     .then(body => {
                         console.log(body)
 
-                        // Layergroups allows for multiple Things to be at the same location
-                        // and still be able to select them indivisually
-                        let markersClusterGroup = L.markerClusterGroup().addTo(map);
-                        markersClusterGroup.on("click", markerOnClick);
-
                         var projectionName = body.crs.type + ":" + body.crs.properties.code
 
                         // Convert the Locations into GeoJSON Features
@@ -74,7 +74,7 @@ serviceEndpoints.forEach(function (endpoint) {
 
                                 var marker = L.marker(latlng, {
                                     title: feature.name,
-                                    icon: (feature.properties.version == 6) ? goldIcon : (feature.properties.version == 7) ? greenIcon : blueIcon
+                                    icon: violetIcon
                                 });
 
                                 return marker
@@ -95,10 +95,6 @@ serviceEndpoints.forEach(function (endpoint) {
         fetch(url)
             .then(response => response.json())
             .then(body => {
-                // Layergroups allows for multiple Things to be at the same location
-                // and still be able to select them indivisually
-                let markersClusterGroup = L.markerClusterGroup().addTo(map);
-                markersClusterGroup.on("click", markerOnClick);
 
                 // Convert the Locations into GeoJSON Features
                 var geoJsonFeatures = body.value.map(function (thing) {
