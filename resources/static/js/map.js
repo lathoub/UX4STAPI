@@ -223,7 +223,7 @@ function markerOnClick(event) {
             + '<input class="form-check-input me-1" type="checkbox" value="">' + datastream.name + '<span class="badge bg-primary rounded-pill"></span></label>'
 
         var observationsUrl = datastream["@iot.selfLink"]
-        if (!observationsUrl.includes("WFS")) observationsUrl += "/Observations?$orderby=resultTime desc&$top=1"
+        if (!observationsUrl.includes("WFS")) observationsUrl
         if (observationsUrl.includes("WFS")) observationsUrl += "&count=1&cql_filter=ab_eoi_code='" + thing.name + "'"
 
         observationsUrl = observationsUrl.replace("http://", "https://")
@@ -252,14 +252,16 @@ function markerOnClick(event) {
                 .then(response => response.json())
                 .then(body => {
                     var datastreamItem = getDatastreamItem(thing.name, datastream.name)
-                    if (body.value.length > 0) {
-                        var phenomenonTimeInterval = body.value[0].phenomenonTime.split("/")
+                    if (body && body.phenomenonTime) {
+                        var phenomenonTimeInterval = body.phenomenonTime.split("/")
                         var toen = moment(phenomenonTimeInterval[phenomenonTimeInterval.length - 1])
+                    //    datastreamItem.childNodes[1].textContent += " (" + body.unitOfMeasurement.symbol + ")"
                         datastreamItem.className = "list-group-item"
                         datastreamItem.childNodes[2].textContent = toen.fromNow()
                         datastreamItem.childNodes[2].className = "badge bg-primary rounded-pill float-end"
                     } else {
                         datastreamItem.className = "list-group-item disabled"
+                    //    datastreamItem.childNodes[1].textContent += " (" + body.unitOfMeasurement.symbol + ")"
                         datastreamItem.childNodes[2].textContent = "no data"
                         datastreamItem.childNodes[2].className = "badge bg-warning rounded-pill float-end"
                     }
@@ -361,8 +363,8 @@ function markerOnClick(event) {
                     .then(response => response.json())
                     .then(observations => {
                         // ROBIN: dit is de pagination, kijk naar beide logs
-                        console.log(observations['@iot.count'])
-                        console.log(observations['@iot.nextLink'])
+                        //console.log(observations['@iot.count'])
+                        //console.log(observations['@iot.nextLink'])
                         // TODO: volgende query async runnen
 
                         const components = observations.value[0].components
