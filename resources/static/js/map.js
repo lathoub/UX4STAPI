@@ -142,10 +142,62 @@ Highcharts.setOptions({
     }
 });
 
-let chart = new Highcharts.Chart("chart", {
+let chart = new Highcharts.stockChart("chart", {
 
     title: { text: "" },
     legend: { enabled: true },
+    rangeSelector: {
+        verticalAlign: 'top',
+        buttons: [
+            {
+                type: 'day',
+                count: 1,
+                text: '1d',
+                events: {
+                    click: function () {
+                       // alert('Clicked button');
+                    }
+                }
+            },
+            {
+                type: 'week',
+                count: 1,
+                text: '1w',
+                events: {
+                    click: function () {
+                        //alert('Clicked button');
+                    }
+                }
+            },
+            {
+                type: 'month',
+                count: 1,
+                text: '1m',
+                events: {
+                    click: function () {
+                        //alert('Clicked button');
+                    }
+                }
+            }, {
+                type: 'month',
+                count: 3,
+                text: '3m'
+            }, {
+                type: 'month',
+                count: 6,
+                text: '6m'
+            }, {
+                type: 'ytd',
+                text: 'YTD'
+            }, {
+                type: 'year',
+                count: 1,
+                text: '1y'
+            }, {
+                type: 'all',
+                text: 'All'
+            }]
+    },
     yAxis: {
         title: "",
     },
