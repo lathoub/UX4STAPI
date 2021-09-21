@@ -225,6 +225,9 @@ function markerOnClick(event) {
         var observationsUrl = datastream["@iot.selfLink"]
         if (!observationsUrl.includes("WFS")) observationsUrl += "/Observations?$orderby=resultTime desc&$top=1"
         if (observationsUrl.includes("WFS")) observationsUrl += "&count=1&cql_filter=ab_eoi_code='" + thing.name + "'"
+
+        observationsUrl = observationsUrl.replace("http://", "https://")
+
         console.log(observationsUrl)
 
         if (observationsUrl.includes("WFS"))
