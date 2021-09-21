@@ -2,5 +2,6 @@
   "name": "UX4STAPI2021",
   "version": "1.0.0",
   "dependencies": {
+    "firebase": "^9.0.2"
   }
 }
