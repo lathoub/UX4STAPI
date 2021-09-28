@@ -17,11 +17,11 @@ $(() => {
 const accountDetails = document.querySelector('.account-details');
 
 const setupAccount = (user) => {
-    if (user){
-          const html = ''
-        + '<div>' + user.email + '</div>';
-          accountDetails.innerHTML = html;
-    } else  {
+    if (user) {
+        // const html = ''
+        //     + '<div>' + user.email + '</div>';
+        // accountDetails.innerHTML = html;
+    } else {
         accountDetails.innerHTML = '';
     }
 }
@@ -32,7 +32,6 @@ auth.onAuthStateChanged(user => {
         setupAccount(user);
         console.log("User logged in: ", user)
     } else {
-        location.href = 'login.html';
         console.log("User logged out")
         setupAccount();
     }
@@ -51,15 +50,15 @@ signupForm.addEventListener('submit', (e) => {
     // sign up the user
     auth.createUserWithEmailAndPassword(email, password).then(() => {
         signupForm.querySelector('.error').innerHTML = '';
-            $('#modal-signup').modal('hide');
-            signupForm.reset();
+        $('#modal-signup').modal('hide');
+        signupForm.reset();
     }).catch(err => {
         signupForm.querySelector('.error').innerHTML = err.message;
     })
 });
 
 // Sign in
-const loginForm = document.querySelector('#signInForm');
+const loginForm = document.querySelector('#signin-form');
 loginForm.addEventListener('submit', (e) => {
     e.preventDefault();
 
@@ -68,11 +67,12 @@ loginForm.addEventListener('submit', (e) => {
     const password = loginForm['inputPassword'].value;
 
     auth.signInWithEmailAndPassword(email, password).then(cred => {
-        location.href = 'index.html';
+        $('#modal-signin').modal('hide');
+        signupForm.reset();
         loginForm.reset();
-    }) .catch(err => {
+    }).catch(err => {
         loginForm.querySelector('.error').innerHTML = err.message;
-    })
+    });
 });
 
 // Sign out
@@ -80,9 +80,8 @@ const logout = document.querySelector('#logout');
 logout.addEventListener('click', (e) => {
     e.preventDefault();
     auth.signOut().then(() => {
-        console.log("logged out")
+        console.log("signed out")
     })
-    location.href = 'login.html';
 })
 
 
