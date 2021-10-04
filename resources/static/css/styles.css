@@ -39,6 +39,19 @@ body{
     margin-top: 5px ;
 }
 
+
+
+#overlay {
+    position: fixed;
+    display: none;
+    height: 50vh;
+    width: 75%;
+    right: 0;
+    background-color: rgba(0,0,0,0.5);
+    z-index: 2;
+    cursor: not-allowed;
+}
+
 #card-title {
     margin-left: 10px ;
 }

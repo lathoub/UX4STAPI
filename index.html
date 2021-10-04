@@ -59,20 +59,20 @@
             </button>
             <div class="collapse navbar-collapse" id="navbarScroll">
                 <ul class="navbar-nav me-auto my-2 my-lg-0 navbar-nav-scroll" style="--bs-scroll-height: 100px;">
-                    <li class="nav-item dropdown">
+                    <li class="nav-item dropdown  logged-out">
                         <a class="nav-link dropdown-toggle" style="color: #bfbfc0 !important;" href="#"
                            id="navbarScrollingDropdown" role="button" data-bs-toggle="dropdown"
                            aria-expanded="false">
                             Login
                         </a>
                         <ul class="dropdown-menu" aria-labelledby="navbarScrollingDropdown">
-                            <li><a class="dropdown-item  modal-trigger logged-out" data-bs-toggle="modal"
+                            <li><a class="dropdown-item  modal-trigger" data-bs-toggle="modal"
                                    data-bs-target="#modal-signin" aria-current="page"
                                    id="accountBtn" href="#">Sign in</a></li>
                             <li>
                                 <hr class="dropdown-divider">
                             </li>
-                            <li><a class="dropdown-item logged-out" id="signUp" data-bs-toggle="modal"
+                            <li><a class="dropdown-item" id="signUp" data-bs-toggle="modal"
                                    data-bs-target="#modal-signup" href="#">Sign
                                 up</a>
                             </li>
@@ -81,6 +81,9 @@
                     <li class="nav-item">
                         <a class="nav-link logged-in" id="logout" style="color: #bfbfc0 !important;" href="#">Logout</a>
                     </li>
+                    <li class="nav-item">
+                        <div class="account-details nav-link" style="color: #bfbfc0 !important;"></div>
+                    </li>
                 </ul>
             </div>
         </div>
@@ -88,6 +91,9 @@
     <div id="contentPanel"></div>
 </div>
 
+<div id="overlay">
+    <p class="text-center bg-dark text-white">Please sign in or make an account to access this feature.</p>
+</div>
 <div id="map"></div>
 <div id="chart" class="highcharts-figure"></div>
 
