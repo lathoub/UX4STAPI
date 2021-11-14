@@ -116,7 +116,7 @@ serviceEndpoints.forEach(function (endpoint) {
 
                         var marker = L.marker(latlng, {
                             title: feature.name,
-                            icon: (feature.properties.version == 6) ? goldIcon : (feature.properties.version == 7) ? greenIcon : blueIcon
+                            icon: (feature.properties.version == 6) ? goldIcon : (feature.properties.version == 7) ? greenIcon : (feature.properties.version == 8) ? yellowIcon : blueIcon
                         });
 
                         return marker
@@ -155,7 +155,7 @@ let chart = new Highcharts.stockChart("chart", {
                 text: '1d',
                 events: {
                     click: function () {
-                       // alert('Clicked button');
+                        // alert('Clicked button');
                     }
                 }
             },
@@ -375,7 +375,7 @@ function markerOnClick(event) {
 
             // get the observation from the past 3 days
             // (3 days of observation is under 1000 observations)
-            const startDateTime = moment(Date.now()).subtract(3, 'd')
+            const startDateTime = moment(Date.now()).subtract(1, 'd')
 
             if (datastream['@iot.selfLink'].includes("WFS")) {
                 // request the more optimal dataArray for the results
@@ -412,8 +412,12 @@ function markerOnClick(event) {
                     + "?$count=true"
                     + "&$top=1000"
                     + "&$resultFormat=dataArray"
+                    + "&$select=result,phenomenonTime,resultTime"
                     + "&$filter=resultTime%20ge%20" + startDateTime.toISOString()
                     + "&$orderby=resultTime asc"
+
+                console.log(observationsUrl)
+
                 fetch(observationsUrl)
                     .then(response => response.json())
                     .then(observations => {
