@@ -12,7 +12,7 @@ dictScale["SoundPressure"] = [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100]
 serviceEndpoints = [
     {
         name: "Aardvark",
-        url: "http://aardvark.myDS.me/FROST-Server/v1.1"
+        url: "https://aardvark.myDS.me/FROST-Server/v1.1"
     },
 ]
 
