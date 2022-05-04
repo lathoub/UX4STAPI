@@ -18,6 +18,10 @@ serviceEndpoints = [
         name: "VMM Open data",
         url: "https://geo.irceline.be/realtime/ows?service=WFS&version=1.3.0"
     },
+    {
+        name: "Aardvark",
+        url: "http://aardvark.myDS.me/FROST-Server/v1.1"
+    },
 ]
 
 function getThingCard(thingName) {
