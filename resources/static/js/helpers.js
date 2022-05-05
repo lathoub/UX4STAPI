@@ -11,8 +11,16 @@ dictScale["SoundPressure"] = [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100]
 // database of serice endpoints
 serviceEndpoints = [
     {
+        name: "snuffeldb",
+        url: "https://stapi.snuffeldb.synology.me/FROST-Server/v1.0"
+    },
+    {
+        name: "VMM Open data",
+        url: "https://geo.irceline.be/realtime/ows?service=WFS&version=1.3.0"
+    },
+    {
         name: "Aardvark",
-        url: "https://aardvark.myDS.me/FROST-Server/v1.1"
+        url: "https://stapi.aardvark.myDS.me/FROST-Server/v1.1"
     },
 ]
 
